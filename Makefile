@@ -12,7 +12,7 @@ SRC += main_deprecated.c
 OBJ := $(SRC:%.c=build/%.o)
 
 CC := gcc
-APP_CFLAGS := -Iinclude -g -O0
+APP_CFLAGS := -g -O0
 # APP_CFLAGS += -ISource
 APP_CFLAGS += -Iztest/include
 LINK := gcc
@@ -38,3 +38,4 @@ all: ${OBJ}
 
 clean:
 	@rm -rf build
+	@rm main.exe

@@ -52,7 +52,7 @@ typedef struct esf z_arch_esf_t;
 
 #include <ztest_assert.h>
 #include <ztest_mock.h>
-#include <ztest_test.h>
+#include <ztest_test_deprecated.h>
 #include <tc_util.h>
 
 #ifdef __cplusplus

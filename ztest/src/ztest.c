@@ -10,12 +10,14 @@
 
 /* ZTEST_DMEM and ZTEST_BMEM are used for the application shared memory test  */
 
-ZTEST_DMEM enum {
+enum Test_phase {
 	TEST_PHASE_SETUP,
 	TEST_PHASE_TEST,
 	TEST_PHASE_TEARDOWN,
 	TEST_PHASE_FRAMEWORK
-} phase = TEST_PHASE_FRAMEWORK;
+};
+
+static ZTEST_DMEM enum Test_phase phase = TEST_PHASE_FRAMEWORK;
 
 static ZTEST_BMEM int test_status;
 
@@ -66,6 +68,10 @@ static void run_test_functions(struct unit_test *test)
 	phase = TEST_PHASE_TEST;
 	test->test();
 }
+
+
+/* Start Porting */
+static void DO_END_TEST() {}
 
 /* Static code analysis tool can raise a violation that the standard header
  * <setjmp.h> shall not be used.
@@ -167,7 +173,7 @@ out:
 	return ret;
 }
 
-
+/* End Porting */
 
 int z_ztest_run_test_suite(const char *name, struct unit_test *suite)
 {
@@ -195,7 +201,7 @@ int z_ztest_run_test_suite(const char *name, struct unit_test *suite)
 	return fail;
 }
 
-void end_report(void)
+static void end_report(void)
 {
 	if (test_status) {
 		TC_END_REPORT(TC_FAIL);
@@ -209,6 +215,8 @@ int main(void)
 	z_init_mock();
 	test_main();
 	end_report();
+
+	DO_END_TEST();
 
 	return test_status;
 }

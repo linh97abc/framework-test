@@ -1,4 +1,4 @@
-SRC := ztest/src/ztest_mock.c ztest/src/ztest.c
+SRC := ztest/src/test_mock.c ztest/src/test.c
 # SRC += $(wildcard UCOSII/port-win32/*.c)
 
 # KERNEL_SRC:=os_core.c  os_flag.c  os_mem.c    os_q.c    os_task.c  os_tmr.c\

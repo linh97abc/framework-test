@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <ztest.h>
+#include <test.h>
 #include <stdint.h>
 
 static void test_empty_test(void)
@@ -13,13 +13,13 @@ static void test_empty_test(void)
 
 static void test_assert_tests(void)
 {
-	zassert_true(1, NULL);
-	zassert_false(0, NULL);
-	zassert_is_null(NULL, NULL);
-	zassert_not_null("foo", NULL);
-	zassert_equal(1, 1, NULL);
-	zassert_equal_ptr(NULL, NULL, NULL);
-	ztest_test_fail();
+	uassert_true(1, NULL);
+	uassert_false(0, NULL);
+	uassert_is_null(NULL, NULL);
+	uassert_not_null("foo", NULL);
+	uassert_equal(1, 1, NULL);
+	uassert_equal_ptr(NULL, NULL, NULL);
+	utest_test_fail();
 }
 
 static void test_assert_mem_equal(void)
@@ -32,21 +32,21 @@ static void test_assert_mem_equal(void)
 	uint32_t actual[4] = {0};
 
 	memcpy(actual, expected, sizeof(actual));
-	zassert_mem_equal(actual, expected, sizeof(expected), NULL);
+	uassert_mem_equal(actual, expected, sizeof(expected), NULL);
 }
 
 static void test_skip(void)
 {
-	ztest_test_skip();
+	utest_test_skip();
 }
 
 void test_main(void)
 {
-	ztest_test_suite(framework_tests,
-					 ztest_unit_test(test_skip),
-					 ztest_unit_test(test_empty_test),
-					 ztest_unit_test(test_assert_tests),
-					 ztest_unit_test(test_assert_mem_equal));
+	utest_test_suite(framework_tests,
+					 utest_unit_test(test_skip),
+					 utest_unit_test(test_empty_test),
+					 utest_unit_test(test_assert_tests),
+					 utest_unit_test(test_assert_mem_equal));
 
-	ztest_run_test_suite(framework_tests);
+	utest_run_test_suite(framework_tests);
 }

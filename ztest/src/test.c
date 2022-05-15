@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <ztest.h>
+#include <test.h>
 #include <stdio.h>
 
 enum Test_phase {
@@ -72,17 +72,17 @@ static jmp_buf test_skip;
 static jmp_buf test_pass;
 static jmp_buf stack_fail;
 
-void ztest_test_fail(void)
+void utest_test_fail(void)
 {
 	raise(SIGABRT);
 }
 
-void ztest_test_skip(void)
+void utest_test_skip(void)
 {
 	longjmp(test_skip, 1);
 }
 
-void ztest_test_pass(void)
+void utest_test_pass(void)
 {
 	longjmp(test_pass, 1);
 }
@@ -156,7 +156,7 @@ out:
 
 /* End Porting */
 
-int z_ztest_run_test_suite(const char *name, struct unit_test *suite)
+int z_utest_run_test_suite(const char *name, struct unit_test *suite)
 {
 	int fail = 0;
 

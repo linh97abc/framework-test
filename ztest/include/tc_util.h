@@ -6,8 +6,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef ZEPHYR_TESTSUITE_INCLUDE_TC_UTIL_H_
-#define ZEPHYR_TESTSUITE_INCLUDE_TC_UTIL_H_
+#ifndef _TESTSUITE_INCLUDE_TC_UTIL_H_
+#define _TESTSUITE_INCLUDE_TC_UTIL_H_
 
 
 #include <string.h>
@@ -164,4 +164,4 @@ static inline const char *TC_RESULT_TO_STR(int result)
 #define TC_CMD_ITEM(name) {STRINGIFY(name), cmd_##name, "none"}
 
 
-#endif /* ZEPHYR_TESTSUITE_INCLUDE_TC_UTIL_H_ */
+#endif /* _TESTSUITE_INCLUDE_TC_UTIL_H_ */

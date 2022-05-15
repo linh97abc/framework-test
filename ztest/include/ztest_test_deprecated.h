@@ -133,23 +133,6 @@ static inline void unit_test_noop(void)
 	}
 
 /**
- * @brief Define a user mode test with setup and teardown functions
- *
- * This should be called as an argument to ztest_test_suite. The test will
- * be run in the following order: @a setup, @a fn, @a teardown. ALL
- * test functions will be run in user mode, and only if CONFIG_USERSPACE
- * is enabled, otherwise this is the same as ztest_unit_test_setup_teardown().
- *
- * @param fn Main test function
- * @param setup Setup function
- * @param teardown Teardown function
- */
-#define ztest_user_unit_test_setup_teardown(fn, setup, teardown)                                   \
-	{                                                                                          \
-		STRINGIFY(fn), fn, setup, teardown, K_USER                                         \
-	}
-
-/**
  * @brief Define a test function
  *
  * This should be called as an argument to ztest_test_suite.
@@ -159,44 +142,6 @@ static inline void unit_test_noop(void)
 #define ztest_unit_test(fn)                                                                        \
 	ztest_unit_test_setup_teardown(fn, unit_test_noop, unit_test_noop)
 
-/**
- * @brief Define a test function that should run as a user thread
- *
- * This should be called as an argument to ztest_test_suite.
- * If CONFIG_USERSPACE is not enabled, this is functionally identical to
- * ztest_unit_test().
- *
- * @param fn Test function
- */
-#define ztest_user_unit_test(fn)                                                                   \
-	ztest_user_unit_test_setup_teardown(fn, unit_test_noop, unit_test_noop)
-
-/**
- * @brief Define a SMP-unsafe test function
- *
- * As ztest_unit_test(), but ensures all test code runs on only
- * one CPU when in SMP.
- *
- * @param fn Test function
- */
-#define ztest_1cpu_unit_test(fn) ztest_unit_test(fn)
-
-
-/**
- * @brief Define a SMP-unsafe test function that should run as a user thread
- *
- * As ztest_user_unit_test(), but ensures all test code runs on only
- * one CPU when in SMP.
- *
- * @param fn Test function
- */
-#define ztest_1cpu_user_unit_test(fn) ztest_user_unit_test(fn)
-
-
-/* definitions for use with testing application shared memory   */
-#define ZTEST_DMEM
-#define ZTEST_BMEM
-#define ZTEST_SECTION	.data
 
 /**
  * @brief Define a test suite
@@ -214,7 +159,7 @@ static inline void unit_test_noop(void)
  * @param suite Name of the testing suite
  */
 #define ztest_test_suite(suite, ...)                                                               \
-	static ZTEST_DMEM struct unit_test _##suite[] = { __VA_ARGS__, { 0 } }
+	static struct unit_test _##suite[] = { __VA_ARGS__, { 0 } }
 /**
  * @brief Run the specified test suite.
  *

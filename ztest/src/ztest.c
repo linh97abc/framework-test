@@ -7,9 +7,6 @@
 #include <ztest.h>
 #include <stdio.h>
 
-
-/* ZTEST_DMEM and ZTEST_BMEM are used for the application shared memory test  */
-
 enum Test_phase {
 	TEST_PHASE_SETUP,
 	TEST_PHASE_TEST,
@@ -17,25 +14,9 @@ enum Test_phase {
 	TEST_PHASE_FRAMEWORK
 };
 
-static ZTEST_DMEM enum Test_phase phase = TEST_PHASE_FRAMEWORK;
+static enum Test_phase phase = TEST_PHASE_FRAMEWORK;
 
-static ZTEST_BMEM int test_status;
-
-/**
- * @brief Try to shorten a filename by removing the current directory
- *
- * This helps to reduce the very long filenames in assertion failures. It
- * removes the current directory from the filename and returns the rest.
- * This makes assertions a lot more readable, and sometimes they fit on one
- * line.
- *
- * @param file Filename to check
- * @returns Shortened filename, or @file if it could not be shortened
- */
-const char *ztest_relative_filename(const char *file)
-{
-	return file;
-}
+static int test_status;
 
 static int cleanup_test(struct unit_test *test)
 {

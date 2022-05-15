@@ -23,26 +23,7 @@
 extern "C" {
 #endif
 
-const char *ztest_relative_filename(const char *file);
 void ztest_test_fail(void);
-#if CONFIG_ZTEST_ASSERT_VERBOSE == 0
-
-static inline bool z_zassert_(bool cond, const char *file, int line)
-{
-	if (cond == false) {
-		PRINT("\n    Assertion failed at %s:%d\n",
-		      ztest_relative_filename(file), line);
-		ztest_test_fail();
-		return false;
-	}
-
-	return true;
-}
-
-#define z_zassert(cond, default_msg, file, line, func, msg, ...)	\
-	z_zassert_(cond, file, line)
-
-#else /* CONFIG_ZTEST_ASSERT_VERBOSE != 0 */
 
 static inline bool z_zassert(bool cond,
 			    const char *default_msg,
@@ -55,7 +36,7 @@ static inline bool z_zassert(bool cond,
 
 		va_start(vargs, msg);
 		PRINT("\n    Assertion failed at %s:%d: %s: %s\n",
-		      ztest_relative_filename(file), line, func, default_msg);
+		      file, line, func, default_msg);
 		vprintf(msg, vargs);
 		printf("\n");
 		va_end(vargs);
@@ -65,13 +46,11 @@ static inline bool z_zassert(bool cond,
 #if CONFIG_ZTEST_ASSERT_VERBOSE == 2
 	else {
 		PRINT("\n   Assertion succeeded at %s:%d (%s)\n",
-		      ztest_relative_filename(file), line, func);
+		      file, line, func);
 	}
 #endif
 	return true;
 }
-
-#endif /* CONFIG_ZTEST_ASSERT_VERBOSE */
 
 
 /**

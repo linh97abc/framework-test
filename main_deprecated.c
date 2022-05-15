@@ -19,6 +19,7 @@ static void test_assert_tests(void)
 	zassert_not_null("foo", NULL);
 	zassert_equal(1, 1, NULL);
 	zassert_equal_ptr(NULL, NULL, NULL);
+	ztest_test_fail();
 }
 
 static void test_assert_mem_equal(void)

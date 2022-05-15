@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "tc_util.h": "c",
+        "ztest_test.h": "c",
+        "typeinfo": "c"
+    }
+}

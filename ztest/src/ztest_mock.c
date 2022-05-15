@@ -18,6 +18,7 @@ struct parameter {
 #include <stdlib.h>
 #include <stdarg.h>
 
+/* ------------- PORT -----------------*/
 static void free_parameter(struct parameter *param)
 {
 	free(param);
@@ -35,6 +36,7 @@ static struct parameter *alloc_parameter(void)
 
 	return param;
 }
+/* -------------------------------------*/
 
 void z_init_mock(void)
 {

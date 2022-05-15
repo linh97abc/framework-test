@@ -170,7 +170,9 @@ out:
 		Z_TC_END_RESULT(ret, test->name);
 	}
 
+#ifdef CONFIG_TEST_PRINT_DETAIL_RESULT
 	test->status = ret;
+#endif
 
 	return ret;
 }

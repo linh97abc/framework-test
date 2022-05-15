@@ -1,4 +1,4 @@
-SRC := ztest/src/test_mock.c ztest/src/test.c
+SRC := utest/src/test_mock.c utest/src/utest.c
 # SRC += $(wildcard UCOSII/port-win32/*.c)
 
 # KERNEL_SRC:=os_core.c  os_flag.c  os_mem.c    os_q.c    os_task.c  os_tmr.c\
@@ -14,7 +14,7 @@ OBJ := $(SRC:%.c=build/%.o)
 CC := gcc
 APP_CFLAGS := -g -O0
 # APP_CFLAGS += -ISource
-APP_CFLAGS += -Iztest/include
+APP_CFLAGS += -Iutest/include
 LINK := gcc
 LINK_FLAG := -g
 ECHO := echo

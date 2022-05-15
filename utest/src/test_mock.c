@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <test.h>
+#include <utest.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -31,7 +31,7 @@ static struct parameter *alloc_parameter(void)
 	param = calloc(1, sizeof(struct parameter));
 	if (!param) {
 		PRINT("Failed to allocate mock parameter\n");
-		utest_test_fail();
+		utest_fail();
 	}
 
 	return param;
@@ -100,7 +100,7 @@ void z_utest_check_expected_value(const char *fn, const char *name,
 	param = find_and_delete_value(&parameter_list, fn, name);
 	if (!param) {
 		PRINT("Failed to find parameter %s for %s\n", name, fn);
-		utest_test_fail();
+		utest_fail();
 	}
 
 	expected = param->value;
@@ -112,7 +112,7 @@ void z_utest_check_expected_value(const char *fn, const char *name,
 		 */
 		PRINT("%s:%s received wrong value: Got %lu, expected %lu\n", fn,
 		      name, (unsigned long)val, (unsigned long)expected);
-		utest_test_fail();
+		utest_fail();
 	}
 }
 
@@ -134,7 +134,7 @@ void z_utest_check_expected_data(const char *fn, const char *name, void *data,
 		 * put a return after to avoid the warning of a null
 		 * dereference of param below.
 		 */
-		utest_test_fail();
+		utest_fail();
 		return;
 	}
 
@@ -143,15 +143,15 @@ void z_utest_check_expected_data(const char *fn, const char *name, void *data,
 
 	if (expected == NULL && data != NULL) {
 		PRINT("%s:%s received null pointer\n", fn, name);
-		utest_test_fail();
+		utest_fail();
 	} else if (data == NULL && expected != NULL) {
 		PRINT("%s:%s received data while expected null pointer\n", fn,
 		      name);
-		utest_test_fail();
+		utest_fail();
 	} else if (data != NULL) {
 		if (memcmp(data, expected, length) != 0) {
 			PRINT("%s:%s data provided don't match\n", fn, name);
-			utest_test_fail();
+			utest_fail();
 		}
 	}
 }
@@ -169,7 +169,7 @@ void z_utest_copy_return_data(const char *fn, const char *name, void *data,
 
 	if (data == NULL) {
 		PRINT("%s:%s received null pointer\n", fn, name);
-		utest_test_fail();
+		utest_fail();
 		return;
 	}
 
@@ -177,7 +177,7 @@ void z_utest_copy_return_data(const char *fn, const char *name, void *data,
 	if (!param) {
 		PRINT("Failed to find parameter %s for %s\n", name, fn);
 		memset(data, 0, length);
-		utest_test_fail();
+		utest_fail();
 	} else {
 		return_data = (void *)param->value;
 		free_parameter(param);
@@ -198,7 +198,7 @@ uintptr_t z_utest_get_return_value(const char *fn)
 
 	if (!param) {
 		PRINT("Failed to find return value for function %s\n", fn);
-		utest_test_fail();
+		utest_fail();
 	}
 
 	value = param->value;

@@ -90,7 +90,7 @@ int z_utest_run_test_suite(const char *name, struct unit_test *suite);
  * This is the function called from failed assertions and the like. You
  * probably don't need to call it yourself.
  */
-void utest_test_fail(void);
+void utest_fail(void);
 
 /**
  * @brief Pass the currently running test.
@@ -105,7 +105,7 @@ void utest_test_pass(void);
 /**
  * @brief Skip the current test.
  */
-void utest_test_skip(void);
+void utest_skip(void);
 
 /**
  * @brief Do nothing, successfully.

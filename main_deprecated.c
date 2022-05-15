@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <test.h>
+#include <utest.h>
 #include <stdint.h>
 
 static void test_empty_test(void)
@@ -19,7 +19,7 @@ static void test_assert_tests(void)
 	uassert_not_null("foo", NULL);
 	uassert_equal(1, 1, NULL);
 	uassert_equal_ptr(NULL, NULL, NULL);
-	utest_test_fail();
+	utest_fail();
 }
 
 static void test_assert_mem_equal(void)
@@ -37,7 +37,7 @@ static void test_assert_mem_equal(void)
 
 static void test_skip(void)
 {
-	utest_test_skip();
+	utest_skip();
 }
 
 void test_main(void)

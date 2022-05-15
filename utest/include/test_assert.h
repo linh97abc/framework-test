@@ -10,10 +10,10 @@
  * @brief testing framework assertion macros
  */
 
-#ifndef _TESTSUITE__uassert_H_
-#define _TESTSUITE__uassert_H_
+#ifndef _TESTSUITE_ASSERT_H__
+#define _TESTSUITE_ASSERT_H__
 
-#include <test.h>
+#include <utest.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-void utest_test_fail(void);
+void utest_fail(void);
 
 static inline bool z_uassert(bool cond,
 			    const char *default_msg,
@@ -40,7 +40,7 @@ static inline bool z_uassert(bool cond,
 		vprintf(msg, vargs);
 		printf("\n");
 		va_end(vargs);
-		utest_test_fail();
+		utest_fail();
 		return false;
 	}
 #if CONFIG_uassert_VERBOSE == 2
@@ -220,4 +220,4 @@ static inline bool z_uassert(bool cond,
 }
 #endif
 
-#endif /* _TESTSUITE__uassert_H_ */
+#endif /* _TESTSUITE_ASSERT_H__ */

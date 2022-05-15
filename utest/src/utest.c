@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <test.h>
+#include <utest.h>
 #include <stdio.h>
 
 enum Test_phase {
@@ -72,12 +72,12 @@ static jmp_buf test_skip;
 static jmp_buf test_pass;
 static jmp_buf stack_fail;
 
-void utest_test_fail(void)
+void utest_fail(void)
 {
 	raise(SIGABRT);
 }
 
-void utest_test_skip(void)
+void utest_skip(void)
 {
 	longjmp(test_skip, 1);
 }

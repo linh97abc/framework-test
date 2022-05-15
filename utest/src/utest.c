@@ -82,7 +82,7 @@ void utest_skip(void)
 	longjmp(test_skip, 1);
 }
 
-void utest_test_pass(void)
+void utest_pass(void)
 {
 	longjmp(test_pass, 1);
 }
@@ -143,6 +143,10 @@ static int run_test(struct unit_test *test)
 
 	run_test_functions(test);
 out:
+	phase = TEST_PHASE_TEARDOWN;
+	test->teardown();
+	phase = TEST_PHASE_FRAMEWORK;
+
 	ret |= cleanup_test(test);
 
 	if (skip) {

@@ -6,6 +6,7 @@
 
 #include <utest.h>
 #include <stdint.h>
+#include <stdio.h>
 
 static void test_empty_test(void)
 {
@@ -35,6 +36,16 @@ static void test_assert_mem_equal(void)
 	uassert_mem_equal(actual, expected, sizeof(expected), NULL);
 }
 
+static void test_skip_setup()
+{
+	puts(__func__);
+}
+
+static void test_skip_teardown()
+{
+	puts(__func__);
+}
+
 static void test_skip(void)
 {
 	utest_skip();
@@ -43,7 +54,7 @@ static void test_skip(void)
 void test_main(void)
 {
 	utest_test_suite(framework_tests,
-					 utest_unit_test(test_skip),
+					 utest_unit_test_setup_teardown(test_skip, test_skip_setup, test_skip_teardown),
 					 utest_unit_test(test_empty_test),
 					 utest_unit_test(test_assert_tests),
 					 utest_unit_test(test_assert_mem_equal));

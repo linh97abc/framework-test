@@ -17,8 +17,8 @@
  * @}
  */
 
-#ifndef _TESTSUITE_INCLUDE_utest_H_
-#define _TESTSUITE_INCLUDE_utest_H_
+#ifndef _TESTSUITE_INCLUDE_UTEST_H_
+#define _TESTSUITE_INCLUDE_UTEST_H_
 
 /**
  * @defgroup utest testing suite
@@ -41,10 +41,38 @@
 extern "C" {
 #endif
 
+/**
+ * @brief Entry function.
+ *
+ */
 void test_main(void);
+
+/**
+ * @brief Fail the currently running test.
+ *
+ * This is the function called from failed assertions and the like. You
+ * probably don't need to call it yourself.
+ */
+void utest_fail(void);
+
+/**
+ * @brief Pass the currently running test.
+ *
+ * Normally a test passes just by returning without an assertion failure.
+ * However, if the success case for your test involves a fatal fault,
+ * you can call this function from k_sys_fatal_error_handler to indicate that
+ * the test passed before aborting the thread.
+ */
+void utest_pass(void);
+
+/**
+ * @brief Skip the current test.
+ */
+void utest_skip(void);
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _TESTSUITE_INCLUDE_utest_H_ */
+#endif /* _TESTSUITE_INCLUDE_UTEST_H_ */

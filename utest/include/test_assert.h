@@ -13,7 +13,6 @@
 #ifndef _TESTSUITE_ASSERT_H__
 #define _TESTSUITE_ASSERT_H__
 
-#include <utest.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>

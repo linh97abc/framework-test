@@ -95,7 +95,7 @@ static void handle_signal(int sig)
 		"teardown",
 	};
 
-	PRINT("    %d", (sig));
+	PRINT("Test fail (sig:    %d)", (sig));
 	switch (phase) {
 	case TEST_PHASE_SETUP:
 	case TEST_PHASE_TEST:

@@ -28,21 +28,25 @@ static void test_assert_mem_equal(void)
 		0x1234,
 		0x5678,
 		0x9ABC,
-		0xDEF0
-	};
+		0xDEF0};
 	uint32_t actual[4] = {0};
 
 	memcpy(actual, expected, sizeof(actual));
 	zassert_mem_equal(actual, expected, sizeof(expected), NULL);
 }
 
+static void test_skip(void)
+{
+	ztest_test_skip();
+}
+
 void test_main(void)
 {
 	ztest_test_suite(framework_tests,
-			 ztest_unit_test(test_empty_test),
-			 ztest_unit_test(test_assert_tests),
-			 ztest_unit_test(test_assert_mem_equal)
-			 );
+					 ztest_unit_test(test_skip),
+					 ztest_unit_test(test_empty_test),
+					 ztest_unit_test(test_assert_tests),
+					 ztest_unit_test(test_assert_mem_equal));
 
 	ztest_run_test_suite(framework_tests);
 }

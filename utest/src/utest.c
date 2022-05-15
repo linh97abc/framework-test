@@ -7,7 +7,8 @@
 #include <utest.h>
 #include <stdio.h>
 
-enum Test_phase {
+enum Test_phase
+{
 	TEST_PHASE_SETUP,
 	TEST_PHASE_TEST,
 	TEST_PHASE_TEARDOWN,
@@ -25,22 +26,25 @@ static int cleanup_test(struct unit_test *test)
 
 	mock_status = z_cleanup_mock();
 
-
-	if (!ret && mock_status == 1) {
+	if (!ret && mock_status == 1)
+	{
 		PRINT("Test %s failed: Unused mock parameter values\n",
-		      test->name);
+			  test->name);
 		ret = TC_FAIL;
-	} else if (!ret && mock_status == 2) {
+	}
+	else if (!ret && mock_status == 2)
+	{
 		PRINT("Test %s failed: Unused mock return values\n",
-		      test->name);
+			  test->name);
 		ret = TC_FAIL;
-	} else {
+	}
+	else
+	{
 		;
 	}
 
 	return ret;
 }
-
 
 static void run_test_functions(struct unit_test *test)
 {
@@ -49,7 +53,6 @@ static void run_test_functions(struct unit_test *test)
 	phase = TEST_PHASE_TEST;
 	test->test();
 }
-
 
 /* Start Porting */
 static void DO_END_TEST() {}
@@ -96,7 +99,8 @@ static void handle_signal(int sig)
 	};
 
 	PRINT("Test fail (sig:    %d)", (sig));
-	switch (phase) {
+	switch (phase)
+	{
 	case TEST_PHASE_SETUP:
 	case TEST_PHASE_TEST:
 	case TEST_PHASE_TEARDOWN:
@@ -113,7 +117,8 @@ static void init_testing(void)
 	signal(SIGABRT, handle_signal);
 	signal(SIGSEGV, handle_signal);
 
-	if (setjmp(stack_fail)) {
+	if (setjmp(stack_fail))
+	{
 		PRINT("Test suite crashed.");
 		exit(1);
 	}
@@ -126,17 +131,21 @@ static int run_test(struct unit_test *test)
 
 	TC_START(test->name);
 
-	if (setjmp(test_fail)) {
+	if (setjmp(test_fail))
+	{
 		ret = TC_FAIL;
 		goto out;
 	}
 
-	if (setjmp(test_skip)) {
+	if (setjmp(test_skip))
+	{
 		skip = 1;
+		ret = TC_SKIP;
 		goto out;
 	}
 
-	if (setjmp(test_pass)) {
+	if (setjmp(test_pass))
+	{
 		ret = TC_PASS;
 		goto out;
 	}
@@ -147,13 +156,21 @@ out:
 	test->teardown();
 	phase = TEST_PHASE_FRAMEWORK;
 
-	ret |= cleanup_test(test);
+	if (cleanup_test(test) != TC_PASS)
+	{
+		ret = TC_FAIL;
+	}
 
-	if (skip) {
+	if (ret == TC_SKIP)
+	{
 		Z_TC_END_RESULT(TC_SKIP, test->name);
-	} else {
+	}
+	else
+	{
 		Z_TC_END_RESULT(ret, test->name);
 	}
+
+	test->status = ret;
 
 	return ret;
 }
@@ -163,22 +180,64 @@ out:
 int z_utest_run_test_suite(const char *name, struct unit_test *suite)
 {
 	int fail = 0;
+	unsigned int test_num = 0;
 
-	if (test_status < 0) {
+	if (test_status < 0)
+	{
 		return test_status;
 	}
 
 	init_testing();
 
 	TC_SUITE_START(name);
-	while (suite->test) {
-		fail += run_test(suite);
-		suite++;
+	while (suite[test_num].test)
+	{
+		if (run_test(&suite[test_num]) == TC_FAIL)
+		{
+			fail++;
+		}
 
-		if (fail && FAIL_FAST) {
+		test_num++;
+
+		if (fail && FAIL_FAST)
+		{
 			break;
 		}
 	}
+
+#ifdef CONFIG_TEST_PRINT_DETAIL_RESULT
+	{
+		int pass = 0, fail = 0, skip = 0;
+		int i;
+
+		PRINT("Test Result:\n");
+		for (i = 0; i < test_num; i++)
+		{
+			int test_result = suite[i].status;
+			const char *test_status_notify[] = {"Pass", "Fail", "Skip"};
+			const char *test_result_string = test_status_notify[test_result];
+
+			switch (test_result)
+			{
+			case TC_PASS:
+				pass++;
+				break;
+			case TC_FAIL:
+				fail++;
+				break;
+
+			default:
+				skip++;
+				break;
+			}
+
+			PRINT("%-50s | %s\n", suite[i].name, test_result_string);
+		}
+		PRINT("Test: %4d | Pass: %4d | Fail: %4d | Skip: %4d\n", test_num, pass, fail, skip);
+	}
+
+#endif
+
 	TC_SUITE_END(name, (fail > 0 ? TC_FAIL : TC_PASS));
 
 	test_status = (test_status || fail) ? 1 : 0;
@@ -188,9 +247,12 @@ int z_utest_run_test_suite(const char *name, struct unit_test *suite)
 
 static void end_report(void)
 {
-	if (test_status) {
+	if (test_status)
+	{
 		TC_END_REPORT(TC_FAIL);
-	} else {
+	}
+	else
+	{
 		TC_END_REPORT(TC_PASS);
 	}
 }

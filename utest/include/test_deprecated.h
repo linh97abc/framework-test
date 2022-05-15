@@ -29,6 +29,9 @@ extern "C"
 		void (*setup)(void);
 		void (*teardown)(void);
 		uint32_t thread_options;
+#ifdef CONFIG_TEST_PRINT_DETAIL_RESULT
+		int status;
+#endif
 	};
 
 	/**

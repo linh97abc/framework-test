@@ -28,10 +28,6 @@ extern "C"
 		void (*test)(void);
 		void (*setup)(void);
 		void (*teardown)(void);
-		uint32_t thread_options;
-#ifdef CONFIG_TEST_PRINT_DETAIL_RESULT
-		int status;
-#endif
 	};
 
 	/**
@@ -85,7 +81,7 @@ extern "C"
 		TEST_ID_INFO(ts_name, tc_name), \
 		TEST_CASE_NAME(ts_name, tc_name), \
 		TEST_SETUP_NAME(ts_name),\
-		TEST_TEARDOWN_NAME(ts_name), 0               \
+		TEST_TEARDOWN_NAME(ts_name)             \
 	}
 
 /**
@@ -93,9 +89,9 @@ extern "C"
  *
  * This function should be called in the following fashion:
  * ```{.c}
- *      utest_test_suite(test_suite_name,
- *              utest_unit_test(test_function),
- *              utest_unit_test(test_other_function)
+ *      TEST_SUITE(test_suite_name,
+ *              TEST_CASE(test_suite_name, test_case_name),
+ *              TEST_CASE(test_suite_name, test_case_name)
  *      );
  *
  *      utest_run_test_suite(test_suite_name);
@@ -104,14 +100,16 @@ extern "C"
  * @param suite Name of the testing suite
  */
 #define TEST_SUITE(suite, ...) \
-	static struct unit_test _##suite[] = {__VA_ARGS__, {0}}
+	struct unit_test _test_suite_##suite[] = {__VA_ARGS__, {0}}
+
+
 /**
- * @brief Run the specified test suite.
+ * @brief Run test suite
  *
- * @param suite Test suite to run.
+ * @param suite Name of the testing suite
  */
-#define utest_run_test_suite(suite) \
-	z_utest_run_test_suite(#suite, _##suite)
+#define RUN_TEST_SUITE(suite) z_utest_run_test_suite(#suite, _test_suite_##suite)
+
 
 	/**
 	 * @}

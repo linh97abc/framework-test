@@ -20,12 +20,12 @@ TEST_TEARDOWN(sample)
 
 TEST(sample, empty)
 {
-	// EXPECT_TRUE(0, NULL);
+	EXPECT_TRUE(0, NULL);
 }
 
 TEST(sample, assert)
 {
-	EXPECT_TRUE(0, NULL);
+	EXPECT_TRUE(1, NULL);
 	EXPECT_FALSE(0, NULL);
 	EXPECT_NULL(NULL, NULL);
 	EXPECT_NOT_NULL("foo", NULL);
@@ -52,13 +52,36 @@ TEST(sample, skip)
 	utest_skip();
 }
 
-void utest_main(void)
+TEST_SETUP(suite2)
 {
-	TEST_SUITE(sample,
-				TEST_CASE(sample, skip),
-				TEST_CASE(sample, empty),
-				TEST_CASE(sample, assert),
-				TEST_CASE(sample, mem_equal));
+}
 
-	utest_run_test_suite(sample);
+TEST_TEARDOWN(suite2)
+{
+}
+
+TEST(suite2, 001)
+{
+	EXPECT_FALSE(0, NULL);
+}
+
+TEST_SUITE(sample,
+		   TEST_CASE(sample, skip),
+		   TEST_CASE(sample, empty),
+		   TEST_CASE(sample, assert),
+		   TEST_CASE(sample, mem_equal));
+
+TEST_SUITE(suite2, TEST_CASE(suite2, 001));
+
+void RunAllTest(void)
+{
+	RUN_TEST_SUITE(sample);
+	RUN_TEST_SUITE(suite2);
+}
+
+int main()
+{
+	utest_main();
+
+	return 0;
 }

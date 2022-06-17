@@ -73,11 +73,10 @@ static void DO_END_TEST() {}
 static jmp_buf test_fail;
 static jmp_buf test_skip;
 static jmp_buf test_pass;
-static jmp_buf stack_fail;
 
 void utest_fail(void)
 {
-	raise(SIGABRT);
+	longjmp(test_fail, 1);
 }
 
 void utest_skip(void)
@@ -90,36 +89,8 @@ void utest_pass(void)
 	longjmp(test_pass, 1);
 }
 
-static void handle_signal(int sig)
-{
-	static const char *const phase_str[] = {
-		"setup",
-		"unit test",
-		"teardown",
-	};
-
-	switch (phase)
-	{
-	case TEST_PHASE_SETUP:
-	case TEST_PHASE_TEST:
-	case TEST_PHASE_TEARDOWN:
-		longjmp(test_fail, 1);
-	case TEST_PHASE_FRAMEWORK:
-		PRINT("\n");
-		longjmp(stack_fail, 1);
-	}
-}
-
 static void init_testing(void)
 {
-	signal(SIGABRT, handle_signal);
-	signal(SIGSEGV, handle_signal);
-
-	if (setjmp(stack_fail))
-	{
-		PRINT("Test suite crashed.");
-		exit(1);
-	}
 }
 
 static int run_test(struct unit_test *test)
@@ -168,10 +139,6 @@ out:
 		Z_TC_END_RESULT(ret);
 	}
 
-#ifdef CONFIG_TEST_PRINT_DETAIL_RESULT
-	test->status = ret;
-#endif
-
 	return ret;
 }
 
@@ -205,39 +172,6 @@ int z_utest_run_test_suite(const char *name, struct unit_test *suite)
 		}
 	}
 
-#ifdef CONFIG_TEST_PRINT_DETAIL_RESULT
-	{
-		int pass = 0, fail = 0, skip = 0;
-		int i;
-
-		PRINT("Test Result:\n");
-		for (i = 0; i < test_num; i++)
-		{
-			int test_result = suite[i].status;
-			const char *test_status_notify[] = {"Pass", "Fail", "Skip"};
-			const char *test_result_string = test_status_notify[test_result];
-
-			switch (test_result)
-			{
-			case TC_PASS:
-				pass++;
-				break;
-			case TC_FAIL:
-				fail++;
-				break;
-
-			default:
-				skip++;
-				break;
-			}
-
-			PRINT("%-50s | %s\n", suite[i].name, test_result_string);
-		}
-		PRINT("Test: %4d | Pass: %4d | Fail: %4d | Skip: %4d\n", test_num, pass, fail, skip);
-	}
-
-#endif
-
 	TC_SUITE_END(name, (fail > 0 ? TC_FAIL : TC_PASS));
 
 	test_status = (test_status || fail) ? 1 : 0;
@@ -257,13 +191,11 @@ static void end_report(void)
 	}
 }
 
-int main(void)
+void utest_main(void)
 {
 	z_init_mock();
-	utest_main();
+	RunAllTest();
 	end_report();
 
 	DO_END_TEST();
-
-	return test_status;
 }

@@ -48,6 +48,12 @@ extern "C" {
 void utest_main(void);
 
 /**
+ * @brief run all test function, must to implement this.
+ *
+ */
+void RunAllTest(void);
+
+/**
  * @brief Fail the currently running test.
  *
  * This is the function called from failed assertions and the like. You

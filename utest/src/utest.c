@@ -89,10 +89,6 @@ void utest_pass(void)
 	longjmp(test_pass, 1);
 }
 
-static void init_testing(void)
-{
-}
-
 static int run_test(struct unit_test *test)
 {
 	int ret = TC_PASS;
@@ -153,8 +149,6 @@ int z_utest_run_test_suite(const char *name, struct unit_test *suite)
 	{
 		return test_status;
 	}
-
-	init_testing();
 
 	TC_SUITE_START(name);
 	while (suite[test_num].test)

@@ -52,18 +52,7 @@ extern "C"
 	 * @{
 	 */
 
-	/**
-	 * @brief Do nothing, successfully.
-	 *
-	 * Unit test / setup function / teardown function that does
-	 * nothing, successfully. Can be used as a parameter to
-	 * utest_unit_test_setup_teardown().
-	 */
-	static inline void unit_test_noop(void)
-	{
-	}
-
-#define TEST_ID_INFO(ts_name, tc_name) "TEST(" #ts_name", "#tc_name")"
+#define TEST_ID_INFO(ts_name, tc_name) "TEST(" #ts_name ", " #tc_name ")"
 #define TEST_SETUP_NAME(ts_name) _testsuite_##ts_name##_setup
 #define TEST_TEARDOWN_NAME(ts_name) _testsuite_##ts_name##_teardown
 #define TEST_CASE_NAME(ts_name, tc_name) _test_##ts_name##_##tc_name
@@ -76,12 +65,12 @@ extern "C"
  * @param ts_name Test suite name
  * @param tc_name Test case name
  */
-#define TEST_CASE(ts_name, tc_name) \
-	{                                                       \
-		TEST_ID_INFO(ts_name, tc_name), \
-		TEST_CASE_NAME(ts_name, tc_name), \
-		TEST_SETUP_NAME(ts_name),\
-		TEST_TEARDOWN_NAME(ts_name)             \
+#define TEST_CASE(ts_name, tc_name)           \
+	{                                         \
+		TEST_ID_INFO(ts_name, tc_name),       \
+			TEST_CASE_NAME(ts_name, tc_name), \
+			TEST_SETUP_NAME(ts_name),         \
+			TEST_TEARDOWN_NAME(ts_name)       \
 	}
 
 /**
@@ -102,14 +91,12 @@ extern "C"
 #define TEST_SUITE(suite, ...) \
 	struct unit_test _test_suite_##suite[] = {__VA_ARGS__, {0}}
 
-
 /**
  * @brief Run test suite
  *
  * @param suite Name of the testing suite
  */
 #define RUN_TEST_SUITE(suite) z_utest_run_test_suite(#suite, _test_suite_##suite)
-
 
 	/**
 	 * @}

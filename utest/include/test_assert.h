@@ -56,6 +56,13 @@ static inline bool __utest_assert(bool cond,
  * @{
  */
 
+
+#define TEST_ASSERT(cond, default_msg, msg, ...) do { \
+	__utest_assert(cond, msg ? ("(" default_msg ")") : (default_msg), \
+			     __FILE__, __LINE__, __func__, \
+			     msg ? msg : "", ##__VA_ARGS__); \
+} while (0)
+
 /**
  * @brief Fail the test, if @a cond is false
  *
@@ -70,11 +77,7 @@ static inline bool __utest_assert(bool cond,
  * @param msg Optional, can be NULL. Message to print if @a cond is false.
  * @param default_msg Message to print if @a cond is false
  */
-#define TEST_ASSERT(cond, default_msg, msg, ...) do { \
-	__utest_assert(cond, msg ? ("(" default_msg ")") : (default_msg), \
-			     __FILE__, __LINE__, __func__, \
-			     msg ? msg : "", ##__VA_ARGS__); \
-} while (0)
+// #define TEST_ASSERT(cond, default_msg, ...) __TEST_ASSERT(cond, default_msg, "" __VA_ARGS__)
 
 /**
  * @brief Assert that this function call won't be reached

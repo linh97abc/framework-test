@@ -34,7 +34,7 @@ static inline bool __utest_assert(bool cond,
 		va_list vargs;
 
 		va_start(vargs, msg);
-		PRINT("\n    Assertion failed at %s:%d: %s: %s\n",
+		PRINT("\n    %s:%d: %s: %s\n",
 		      file, line, func, default_msg);
 		vprintf(msg, vargs);
 		printf("\n");
@@ -57,10 +57,10 @@ static inline bool __utest_assert(bool cond,
  */
 
 
-#define TEST_ASSERT(cond, default_msg, msg, ...) do { \
-	__utest_assert(cond, msg ? ("(" default_msg ")") : (default_msg), \
+#define __TEST_ASSERT(cond, default_msg, msg, ...) do { \
+	__utest_assert(cond, ("(" default_msg ")"), \
 			     __FILE__, __LINE__, __func__, \
-			     msg ? msg : "", ##__VA_ARGS__); \
+			     msg, ##__VA_ARGS__); \
 } while (0)
 
 /**
@@ -77,30 +77,27 @@ static inline bool __utest_assert(bool cond,
  * @param msg Optional, can be NULL. Message to print if @a cond is false.
  * @param default_msg Message to print if @a cond is false
  */
-// #define TEST_ASSERT(cond, default_msg, ...) __TEST_ASSERT(cond, default_msg, "" __VA_ARGS__)
+#define TEST_ASSERT(cond, default_msg, ...) __TEST_ASSERT(cond, default_msg, "" __VA_ARGS__)
 
 /**
  * @brief Assert that this function call won't be reached
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_UNREACHABLE(msg, ...) TEST_ASSERT(0, "Reached unreachable code", \
-					      msg, ##__VA_ARGS__)
+#define EXPECT_UNREACHABLE(...) TEST_ASSERT(0, "Reached unreachable code", ##__VA_ARGS__)
 
 /**
  * @brief Assert that @a cond is true
  * @param cond Condition to check
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_TRUE(cond, msg, ...) TEST_ASSERT(cond, #cond " is false", \
-					     msg, ##__VA_ARGS__)
+#define EXPECT_TRUE(cond, ...) TEST_ASSERT(cond, #cond " is false", ##__VA_ARGS__)
 
 /**
  * @brief Assert that @a cond is false
  * @param cond Condition to check
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_FALSE(cond, msg, ...) TEST_ASSERT(!(cond), #cond " is true", \
-					      msg, ##__VA_ARGS__)
+#define EXPECT_FALSE(cond, ...) TEST_ASSERT(!(cond), #cond " is true", ##__VA_ARGS__)
 
 
 /**
@@ -108,18 +105,16 @@ static inline bool __utest_assert(bool cond,
  * @param ptr Pointer to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_NULL(ptr, msg, ...) TEST_ASSERT((ptr) == NULL,	    \
-					       #ptr " is not NULL", \
-					       msg, ##__VA_ARGS__)
+#define EXPECT_NULL(ptr, ...) TEST_ASSERT((ptr) == NULL,	    \
+					       #ptr " is not NULL", ##__VA_ARGS__)
 
 /**
  * @brief Assert that @a ptr is not NULL
  * @param ptr Pointer to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_NOT_NULL(ptr, msg, ...) TEST_ASSERT((ptr) != NULL,	      \
-						#ptr " is NULL", msg, \
-						##__VA_ARGS__)
+#define EXPECT_NOT_NULL(ptr, ...) TEST_ASSERT((ptr) != NULL,	      \
+						#ptr " is NULL", ##__VA_ARGS__)
 
 /**
  * @brief Assert that @a a equals @a b
@@ -130,9 +125,8 @@ static inline bool __utest_assert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_EQ(a, b, msg, ...) TEST_ASSERT((a) == (b),	      \
-					      #a " not equal to " #b, \
-					      msg, ##__VA_ARGS__)
+#define EXPECT_EQ(a, b, ...) TEST_ASSERT((a) == (b),	      \
+					      #a " not equal to " #b, ##__VA_ARGS__)
 
 /**
  * @brief Assert that @a a does not equal @a b
@@ -143,9 +137,8 @@ static inline bool __utest_assert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_NE(a, b, msg, ...) TEST_ASSERT((a) != (b),	      \
-						  #a " equal to " #b, \
-						  msg, ##__VA_ARGS__)
+#define EXPECT_NE(a, b, ...) TEST_ASSERT((a) != (b),	      \
+						  #a " equal to " #b, ##__VA_ARGS__)
 
 /**
  * @brief Tests that @a a < @a b
@@ -156,9 +149,8 @@ static inline bool __utest_assert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_LT(a, b, msg, ...) TEST_ASSERT((a) < (b),	      \
-						  #a " >= " #b, \
-						  msg, ##__VA_ARGS__)
+#define EXPECT_LT(a, b, ...) TEST_ASSERT((a) < (b),	      \
+						  #a " >= " #b, ##__VA_ARGS__)
 
 /**
  * @brief Tests that @a a <= @a b
@@ -169,9 +161,8 @@ static inline bool __utest_assert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_LE(a, b, msg, ...) TEST_ASSERT((a) <= (b),	      \
-						  #a " > " #b, \
-						  msg, ##__VA_ARGS__)
+#define EXPECT_LE(a, b, ...) TEST_ASSERT((a) <= (b),	      \
+						  #a " > " #b, ##__VA_ARGS__)
 
 /**
  * @brief Tests that @a a > @a b
@@ -182,9 +173,8 @@ static inline bool __utest_assert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_GT(a, b, msg, ...) TEST_ASSERT((a) > (b),	      \
-						  #a " <= " #b, \
-						  msg, ##__VA_ARGS__)
+#define EXPECT_GT(a, b, ...) TEST_ASSERT((a) > (b),	      \
+						  #a " <= " #b, ##__VA_ARGS__)
 
 /**
  * @brief Tests that @a a >= @a b
@@ -195,9 +185,8 @@ static inline bool __utest_assert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_GE(a, b, msg, ...) TEST_ASSERT((a) >= (b),	      \
-						  #a " < " #b, \
-						  msg, ##__VA_ARGS__)
+#define EXPECT_GE(a, b, ...) TEST_ASSERT((a) >= (b),	      \
+						  #a " < " #b, ##__VA_ARGS__)
 
 /**
  * @brief Assert that @a a equals @a b
@@ -208,9 +197,8 @@ static inline bool __utest_assert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_EQ_PTR(a, b, msg, ...)			    \
-	TEST_ASSERT((void *)(a) == (void *)(b), #a " not equal to " #b, \
-		msg, ##__VA_ARGS__)
+#define EXPECT_EQ_PTR(a, b, ...)			    \
+	TEST_ASSERT((void *)(a) == (void *)(b), #a " not equal to " #b, ##__VA_ARGS__)
 
 /**
  * @brief Assert that @a a is within @a b with delta @a d
@@ -220,10 +208,9 @@ static inline bool __utest_assert(bool cond,
  * @param delta Delta
  * @param msg Optional message to print if the assertion fails
  */
-#define EXPECT_ALMOST_EQ(a, b, delta, msg, ...)			     \
+#define EXPECT_ALMOST_EQ(a, b, delta, ...)			     \
 	TEST_ASSERT(((a) >= ((b) - (delta))) && ((a) <= ((b) + (delta))),	     \
-		#a " not within " #b " +/- " #delta,		     \
-		msg, ##__VA_ARGS__)
+		#a " not within " #b " +/- " #delta, ##__VA_ARGS__)
 
 
 /**
@@ -251,9 +238,9 @@ static inline bool __utest_assert(bool cond,
  * @param size Size of buffers
  * @param msg Optional message to print if the assertion fails
  */
-#define __expect_mem_equal__(buf, exp, size, msg, ...)                    \
+#define __expect_mem_equal__(buf, exp, size, ...)                    \
 	TEST_ASSERT(memcmp(buf, exp, size) == 0, #buf " not equal to " #exp, \
-	msg, ##__VA_ARGS__)
+	##__VA_ARGS__)
 
 /**
  * @}

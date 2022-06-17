@@ -20,17 +20,17 @@ TEST_TEARDOWN(sample)
 
 TEST(sample, empty)
 {
-	EXPECT_TRUE(0, NULL);
+	EXPECT_TRUE(0);
 }
 
 TEST(sample, assert)
 {
-	EXPECT_TRUE(1, NULL);
-	EXPECT_FALSE(0, NULL);
-	EXPECT_NULL(NULL, NULL);
-	EXPECT_NOT_NULL("foo", NULL);
-	EXPECT_EQ(1, 1, NULL);
-	EXPECT_EQ_PTR(NULL, NULL, NULL);
+	EXPECT_TRUE(1);
+	EXPECT_FALSE(0);
+	EXPECT_NULL(NULL);
+	EXPECT_NOT_NULL("foo");
+	EXPECT_EQ(1, 1);
+	EXPECT_EQ_PTR(NULL, NULL);
 	utest_fail();
 }
 
@@ -44,7 +44,7 @@ TEST(sample, mem_equal)
 	uint32_t actual[4] = {0};
 
 	memcpy(actual, expected, sizeof(actual));
-	EXPECT_MEM_EQ(actual, expected, sizeof(expected), NULL);
+	EXPECT_MEM_EQ(actual, expected, sizeof(expected));
 }
 
 TEST(sample, skip)
@@ -62,7 +62,7 @@ TEST_TEARDOWN(suite2)
 
 TEST(suite2, 001)
 {
-	EXPECT_FALSE(0, NULL);
+	EXPECT_FALSE(1, "abc");
 }
 
 TEST_SUITE(sample,

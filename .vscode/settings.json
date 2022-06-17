@@ -8,6 +8,7 @@
         "array": "c",
         "string_view": "c",
         "type_traits": "c",
-        "functional": "c"
+        "functional": "c",
+        "random": "c"
     }
 }

@@ -62,7 +62,7 @@ TEST_TEARDOWN(suite2)
 
 TEST(suite2, 001)
 {
-	EXPECT_FALSE(1, "abc");
+	EXPECT_EQ(1, 21, "ancd");
 }
 
 TEST_SUITE(sample,

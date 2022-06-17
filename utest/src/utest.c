@@ -98,13 +98,11 @@ static void handle_signal(int sig)
 		"teardown",
 	};
 
-	PRINT("Test fail (sig:    %d)", (sig));
 	switch (phase)
 	{
 	case TEST_PHASE_SETUP:
 	case TEST_PHASE_TEST:
 	case TEST_PHASE_TEARDOWN:
-		PRINT(" at %s function\n", phase_str[phase]);
 		longjmp(test_fail, 1);
 	case TEST_PHASE_FRAMEWORK:
 		PRINT("\n");
@@ -163,11 +161,11 @@ out:
 
 	if (ret == TC_SKIP)
 	{
-		Z_TC_END_RESULT(TC_SKIP, test->name);
+		Z_TC_END_RESULT(TC_SKIP);
 	}
 	else
 	{
-		Z_TC_END_RESULT(ret, test->name);
+		Z_TC_END_RESULT(ret);
 	}
 
 #ifdef CONFIG_TEST_PRINT_DETAIL_RESULT
@@ -262,7 +260,7 @@ static void end_report(void)
 int main(void)
 {
 	z_init_mock();
-	test_main();
+	utest_main();
 	end_report();
 
 	DO_END_TEST();

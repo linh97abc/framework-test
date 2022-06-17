@@ -67,30 +67,26 @@ extern "C"
 	{
 	}
 
-/**
- * @brief Define a test with setup and teardown functions
- *
- * This should be called as an argument to utest_test_suite. The test will
- * be run in the following order: @a setup, @a fn, @a teardown.
- *
- * @param fn Main test function
- * @param setup Setup function
- * @param teardown Teardown function
- */
-#define utest_unit_test_setup_teardown(fn, setup, teardown) \
-	{                                                       \
-		STRINGIFY(fn), fn, setup, teardown, 0               \
-	}
+#define TEST_ID_INFO(ts_name, tc_name) "TEST(" #ts_name", "#tc_name")"
+#define TEST_SETUP_NAME(ts_name) _testsuite_##ts_name##_setup
+#define TEST_TEARDOWN_NAME(ts_name) _testsuite_##ts_name##_teardown
+#define TEST_CASE_NAME(ts_name, tc_name) _test_##ts_name##_##tc_name
 
 /**
- * @brief Define a test function
+ * @brief Define a test case
  *
- * This should be called as an argument to utest_test_suite.
+ * This should be called as an argument to TEST_SUITE.
  *
- * @param fn Test function
+ * @param ts_name Test suite name
+ * @param tc_name Test case name
  */
-#define utest_unit_test(fn) \
-	utest_unit_test_setup_teardown(fn, unit_test_noop, unit_test_noop)
+#define TEST_CASE(ts_name, tc_name) \
+	{                                                       \
+		TEST_ID_INFO(ts_name, tc_name), \
+		TEST_CASE_NAME(ts_name, tc_name), \
+		TEST_SETUP_NAME(ts_name),\
+		TEST_TEARDOWN_NAME(ts_name), 0               \
+	}
 
 /**
  * @brief Define a test suite
@@ -107,7 +103,7 @@ extern "C"
  *
  * @param suite Name of the testing suite
  */
-#define utest_test_suite(suite, ...) \
+#define TEST_SUITE(suite, ...) \
 	static struct unit_test _##suite[] = {__VA_ARGS__, {0}}
 /**
  * @brief Run the specified test suite.

@@ -24,7 +24,7 @@ extern "C" {
 
 void utest_fail(void);
 
-static inline bool z_uassert(bool cond,
+static inline bool __utest_assert(bool cond,
 			    const char *default_msg,
 			    const char *file,
 			    int line, const char *func,
@@ -42,12 +42,7 @@ static inline bool z_uassert(bool cond,
 		utest_fail();
 		return false;
 	}
-#if CONFIG_uassert_VERBOSE == 2
-	else {
-		PRINT("\n   Assertion succeeded at %s:%d (%s)\n",
-		      file, line, func);
-	}
-#endif
+
 	return true;
 }
 
@@ -75,8 +70,8 @@ static inline bool z_uassert(bool cond,
  * @param msg Optional, can be NULL. Message to print if @a cond is false.
  * @param default_msg Message to print if @a cond is false
  */
-#define uassert(cond, default_msg, msg, ...) do { \
-	bool _ret = z_uassert(cond, msg ? ("(" default_msg ")") : (default_msg), \
+#define TEST_ASSERT(cond, default_msg, msg, ...) do { \
+	__utest_assert(cond, msg ? ("(" default_msg ")") : (default_msg), \
 			     __FILE__, __LINE__, __func__, \
 			     msg ? msg : "", ##__VA_ARGS__); \
 } while (0)
@@ -85,7 +80,7 @@ static inline bool z_uassert(bool cond,
  * @brief Assert that this function call won't be reached
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_unreachable(msg, ...) uassert(0, "Reached unreachable code", \
+#define EXPECT_UNREACHABLE(msg, ...) TEST_ASSERT(0, "Reached unreachable code", \
 					      msg, ##__VA_ARGS__)
 
 /**
@@ -93,7 +88,7 @@ static inline bool z_uassert(bool cond,
  * @param cond Condition to check
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_true(cond, msg, ...) uassert(cond, #cond " is false", \
+#define EXPECT_TRUE(cond, msg, ...) TEST_ASSERT(cond, #cond " is false", \
 					     msg, ##__VA_ARGS__)
 
 /**
@@ -101,23 +96,16 @@ static inline bool z_uassert(bool cond,
  * @param cond Condition to check
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_false(cond, msg, ...) uassert(!(cond), #cond " is true", \
+#define EXPECT_FALSE(cond, msg, ...) TEST_ASSERT(!(cond), #cond " is true", \
 					      msg, ##__VA_ARGS__)
 
-/**
- * @brief Assert that @a cond is 0 (success)
- * @param cond Condition to check
- * @param msg Optional message to print if the assertion fails
- */
-#define uassert_ok(cond, msg, ...) uassert(!(cond), #cond " is non-zero", \
-					      msg, ##__VA_ARGS__)
 
 /**
  * @brief Assert that @a ptr is NULL
  * @param ptr Pointer to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_is_null(ptr, msg, ...) uassert((ptr) == NULL,	    \
+#define EXPECT_NULL(ptr, msg, ...) TEST_ASSERT((ptr) == NULL,	    \
 					       #ptr " is not NULL", \
 					       msg, ##__VA_ARGS__)
 
@@ -126,7 +114,7 @@ static inline bool z_uassert(bool cond,
  * @param ptr Pointer to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_not_null(ptr, msg, ...) uassert((ptr) != NULL,	      \
+#define EXPECT_NOT_NULL(ptr, msg, ...) TEST_ASSERT((ptr) != NULL,	      \
 						#ptr " is NULL", msg, \
 						##__VA_ARGS__)
 
@@ -139,7 +127,7 @@ static inline bool z_uassert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_equal(a, b, msg, ...) uassert((a) == (b),	      \
+#define EXPECT_EQ(a, b, msg, ...) TEST_ASSERT((a) == (b),	      \
 					      #a " not equal to " #b, \
 					      msg, ##__VA_ARGS__)
 
@@ -152,8 +140,60 @@ static inline bool z_uassert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_not_equal(a, b, msg, ...) uassert((a) != (b),	      \
+#define EXPECT_NE(a, b, msg, ...) TEST_ASSERT((a) != (b),	      \
 						  #a " equal to " #b, \
+						  msg, ##__VA_ARGS__)
+
+/**
+ * @brief Tests that @a a < @a b
+ *
+ * @a a and @a b won't be converted and will be compared directly.
+ *
+ * @param a Value to compare
+ * @param b Value to compare
+ * @param msg Optional message to print if the assertion fails
+ */
+#define EXPECT_LT(a, b, msg, ...) TEST_ASSERT((a) < (b),	      \
+						  #a " >= " #b, \
+						  msg, ##__VA_ARGS__)
+
+/**
+ * @brief Tests that @a a <= @a b
+ *
+ * @a a and @a b won't be converted and will be compared directly.
+ *
+ * @param a Value to compare
+ * @param b Value to compare
+ * @param msg Optional message to print if the assertion fails
+ */
+#define EXPECT_LE(a, b, msg, ...) TEST_ASSERT((a) <= (b),	      \
+						  #a " > " #b, \
+						  msg, ##__VA_ARGS__)
+
+/**
+ * @brief Tests that @a a > @a b
+ *
+ * @a a and @a b won't be converted and will be compared directly.
+ *
+ * @param a Value to compare
+ * @param b Value to compare
+ * @param msg Optional message to print if the assertion fails
+ */
+#define EXPECT_GT(a, b, msg, ...) TEST_ASSERT((a) > (b),	      \
+						  #a " <= " #b, \
+						  msg, ##__VA_ARGS__)
+
+/**
+ * @brief Tests that @a a >= @a b
+ *
+ * @a a and @a b won't be converted and will be compared directly.
+ *
+ * @param a Value to compare
+ * @param b Value to compare
+ * @param msg Optional message to print if the assertion fails
+ */
+#define EXPECT_GE(a, b, msg, ...) TEST_ASSERT((a) >= (b),	      \
+						  #a " < " #b, \
 						  msg, ##__VA_ARGS__)
 
 /**
@@ -165,8 +205,8 @@ static inline bool z_uassert(bool cond,
  * @param b Value to compare
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_equal_ptr(a, b, msg, ...)			    \
-	uassert((void *)(a) == (void *)(b), #a " not equal to " #b, \
+#define EXPECT_EQ_PTR(a, b, msg, ...)			    \
+	TEST_ASSERT((void *)(a) == (void *)(b), #a " not equal to " #b, \
 		msg, ##__VA_ARGS__)
 
 /**
@@ -174,13 +214,14 @@ static inline bool z_uassert(bool cond,
  *
  * @param a Value to compare
  * @param b Value to compare
- * @param d Delta
+ * @param delta Delta
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_within(a, b, d, msg, ...)			     \
-	uassert(((a) >= ((b) - (d))) && ((a) <= ((b) + (d))),	     \
-		#a " not within " #b " +/- " #d,		     \
+#define EXPECT_ALMOST_EQ(a, b, delta, msg, ...)			     \
+	TEST_ASSERT(((a) >= ((b) - (delta))) && ((a) <= ((b) + (delta))),	     \
+		#a " not within " #b " +/- " #delta,		     \
 		msg, ##__VA_ARGS__)
+
 
 /**
  * @brief Assert that 2 memory buffers have the same contents
@@ -190,25 +231,25 @@ static inline bool z_uassert(bool cond,
  * would expand to more than one values (ANSI-C99 defines that all the macro
  * arguments have to be expanded before macro call).
  *
- * @param ... Arguments, see @ref uassert_mem_equal__
+ * @param ... Arguments, see @ref __expect_mem_equal__
  *            for real arguments accepted.
  */
-#define uassert_mem_equal(...) \
-	uassert_mem_equal__(__VA_ARGS__)
+#define EXPECT_MEM_EQ(...) \
+	__expect_mem_equal__(__VA_ARGS__)
 
 /**
  * @brief Internal assert that 2 memory buffers have the same contents
  *
  * @note This is internal macro, to be used as a second expansion.
- *       See @ref uassert_mem_equal.
+ *       See @ref EXPECT_MEM_EQ.
  *
  * @param buf Buffer to compare
  * @param exp Buffer with expected contents
  * @param size Size of buffers
  * @param msg Optional message to print if the assertion fails
  */
-#define uassert_mem_equal__(buf, exp, size, msg, ...)                    \
-	uassert(memcmp(buf, exp, size) == 0, #buf " not equal to " #exp, \
+#define __expect_mem_equal__(buf, exp, size, msg, ...)                    \
+	TEST_ASSERT(memcmp(buf, exp, size) == 0, #buf " not equal to " #exp, \
 	msg, ##__VA_ARGS__)
 
 /**

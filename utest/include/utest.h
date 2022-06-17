@@ -45,7 +45,7 @@ extern "C" {
  * @brief Entry function.
  *
  */
-void test_main(void);
+void utest_main(void);
 
 /**
  * @brief Fail the currently running test.
@@ -70,6 +70,11 @@ void utest_pass(void);
  */
 void utest_skip(void);
 
+#define TEST(ts_name, tc_name) void TEST_CASE_NAME(ts_name, tc_name)(void)
+
+#define TEST_SETUP(ts_name) void TEST_SETUP_NAME(ts_name)(void)
+
+#define TEST_TEARDOWN(ts_name) void TEST_TEARDOWN_NAME(ts_name)(void)
 
 #ifdef __cplusplus
 }

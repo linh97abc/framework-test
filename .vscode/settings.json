@@ -3,6 +3,11 @@
         "tc_util.h": "c",
         "ztest_test.h": "c",
         "typeinfo": "c",
-        "test_assert.h": "c"
+        "test_assert.h": "c",
+        "algorithm": "c",
+        "array": "c",
+        "string_view": "c",
+        "type_traits": "c",
+        "functional": "c"
     }
 }

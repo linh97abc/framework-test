@@ -92,7 +92,6 @@ namespace testing
 static int run_test(testing::Test *test)
 {
 	int ret = TC_PASS;
-	int skip = 0;
 
 	testing::Message() << TC_START(test->TS_Name(), test->Name());
 
@@ -104,7 +103,6 @@ static int run_test(testing::Test *test)
 
 	if (setjmp(test_skip))
 	{
-		skip = 1;
 		ret = TC_SKIP;
 		goto out;
 	}

@@ -18,7 +18,6 @@ struct parameter
 };
 
 #include <stdlib.h>
-#include "port.h"
 
 /* ------------- PORT -----------------*/
 #ifdef __ucos_ii__

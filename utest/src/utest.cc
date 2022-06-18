@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <unittest.h>
+#include "../include/unittest.h"
 #include <stdio.h>
 
 enum Test_phase

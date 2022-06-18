@@ -15,8 +15,6 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-
 #include <iostream>
 #include <string.h>
 
@@ -69,8 +67,6 @@ namespace testing
 		return isAlmostEqual(actual, expected, expected * rel_error);
 	}
 };
-
-#endif
 
 #ifdef __INTEL_COMPILER
 #define TEST_AMBIGUOUS_ELSE_BLOCKER_

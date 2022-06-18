@@ -6,7 +6,7 @@
 
 
 
-#include <unittest.h>
+#include "../include/unittest.h"
 
 #ifdef CONFIG_TEST_MOCKING
 #include <string.h>

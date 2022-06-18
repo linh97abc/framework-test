@@ -43,14 +43,6 @@ static int cleanup_test(testing::Test *test)
 	return ret;
 }
 
-static void run_test_functions(testing::Test *test)
-{
-	phase = TEST_PHASE_SETUP;
-	test->SetUp();
-	phase = TEST_PHASE_TEST;
-	test->run();
-}
-
 /* Start Porting */
 static void DO_END_TEST() {}
 
@@ -89,68 +81,53 @@ namespace testing
 	}
 }
 
-static int run_test(testing::Test *test)
+void testing::Test::Run()
 {
-	int ret = TC_PASS;
-
-	testing::Message() << TC_START(test->TS_Name(), test->Name());
+	testing::Message() << TC_START(this->TS_Name(), this->Name());
 
 	if (setjmp(test_fail))
 	{
-		ret = TC_FAIL;
+		this->tc_res = TC_FAIL;
 		goto out;
 	}
 
 	if (setjmp(test_skip))
 	{
-		ret = TC_SKIP;
+		this->tc_res = TC_SKIP;
 		goto out;
 	}
 
 	if (setjmp(test_pass))
 	{
-		ret = TC_PASS;
+		this->tc_res = TC_PASS;
 		goto out;
 	}
 
-	run_test_functions(test);
+	phase = TEST_PHASE_SETUP;
+	this->SetUp();
+	phase = TEST_PHASE_TEST;
+	this->TestBody();
 out:
 	phase = TEST_PHASE_TEARDOWN;
-	test->TearDown();
+	this->TearDown();
 	phase = TEST_PHASE_FRAMEWORK;
 
-	if (cleanup_test(test) != TC_PASS)
+	if (cleanup_test(this) != TC_PASS)
 	{
-		ret = TC_FAIL;
+		this->tc_res = TC_FAIL;
 	}
 
-	if (ret == TC_SKIP)
+	if (this->tc_res == TC_SKIP)
 	{
 		testing::Message() << TC_END_RESULT(TC_SKIP);
 	}
 	else
 	{
-		testing::Message() << TC_END_RESULT(ret);
+		testing::Message() << TC_END_RESULT(this->tc_res);
 	}
-
-	return ret;
 }
 
 /* End Porting */
-
-static inline bool isInRunLists(const testing::Test *tc, const char *suite_name, const char *tc_name)
-{
-	if ((suite_name != nullptr) && strcmp(tc->TS_Name(), suite_name))
-	{
-		return false;
-	}
-	if ((tc_name != nullptr) && strcmp(tc->Name(), tc_name))
-	{
-		return false;
-	}
-
-	return true;
-}
 
 static int RunTestSuite(testing::Test *ts, const char *suite_name, const char *tc_name)
 {
@@ -166,9 +143,10 @@ static int RunTestSuite(testing::Test *ts, const char *suite_name, const char *t
 
 	while (it)
 	{
-		if (isInRunLists(it, suite_name, tc_name))
+		if (it->isSameName(suite_name, tc_name))
 		{
-			if (run_test(it) == TC_FAIL)
+			it->Run();
+			if (it->GetResult() == TC_FAIL)
 			{
 				fail++;
 			}
@@ -189,19 +167,6 @@ static int RunTestSuite(testing::Test *ts, const char *suite_name, const char *t
 	return fail;
 }
 
-static void RunAllTest(const char *suite_name, const char *tc_name)
-{
-	testing::BaseTestManager *allTest = testing::BaseTestManager::getAllTest();
-
-	while (allTest)
-	{
-		testing::Test *ts = allTest->GetTestSuite();
-
-		RunTestSuite(ts, suite_name, tc_name);
-		allTest = allTest->Next();
-	}
-}
-
 static void end_report(void)
 {
 	if (test_status)
@@ -214,14 +179,58 @@ static void end_report(void)
 	}
 }
 
-void utest_main(const char *suite_name, const char *tc_name)
+bool testing::Test::isSameName(const char *suite_name, const char *tc_name)
 {
+	if ((suite_name != nullptr) && strcmp(this->__ts_name, suite_name))
+	{
+		return false;
+	}
+	if ((tc_name != nullptr) && strcmp(this->name, tc_name))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+int testing::UnitTest::Run(const char *suite_name, const char *tc_name)
+{
+	int fail;
+
 	if (!testing::mock::__init())
 	{
-		RunAllTest(suite_name, tc_name);
+		fail = RunTestSuite(this->list, suite_name, tc_name);
 	}
 
 	end_report();
 
 	DO_END_TEST();
+
+	return fail;
+}
+
+void testing::UnitTest::AddTest(testing::Test *tc)
+{
+	UnitTest *manager = GetInstance();
+
+	if (manager->list)
+	{
+		Test *it = manager->list;
+		while (it->next)
+		{
+			it = it->next;
+		}
+		it->next = tc;
+	}
+	else
+	{
+		manager->list = tc;
+	}
+
+	tc->next = nullptr;
+}
+
+int utest_main(const char *suite_name, const char *tc_name)
+{
+	return testing::UnitTest::GetInstance()->Run(suite_name, tc_name);
 }

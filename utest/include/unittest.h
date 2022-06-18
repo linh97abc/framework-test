@@ -30,7 +30,6 @@
 #include "test_mock.h"
 #include "tc_util.h"
 #include "port.h"
-
 namespace testing
 {
     // The abstract class that all tests inherit from.
@@ -58,101 +57,56 @@ namespace testing
     // Test is not copyable.
     class Test
     {
-        template <class T>
-        friend class TestSuiteManager;
+        friend class UnitTest;
 
     protected:
-        Test() = default;
         const char *name;
         const char *__ts_name;
+        int tc_res;
         Test *next;
 
-    public:
+        //----------------
+        Test()
+        {
+            tc_res = TC_PASS;
+            next = nullptr;
+        }
         virtual void SetUp(void) {}
         virtual void TearDown(void) {}
+        virtual void TestBody(void) = 0;
 
-        virtual void run(void) = 0;
-        const char *Name() const { return this->name; }
-        const char *TS_Name() const { return this->__ts_name; }
-        Test *Next() { return this->next; }
-
+    public:
+        void Run();
         // We disallow copying Tests.
         Test(const Test &) = delete;
         Test &operator=(const Test &) = delete;
+
+        //---------------
+        const char *Name() const { return this->name; }
+        const char *TS_Name() const { return this->__ts_name; }
+        Test *Next() { return this->next; }
+        int GetResult() { return this->tc_res; }
+        bool isSameName(const char *suite_name, const char *tc_name);
     };
 
-    class BaseTestManager
+    class UnitTest
     {
-    protected:
-        BaseTestManager *next;
         Test *list;
-
-        static BaseTestManager **__getAllTest()
-        {
-            static BaseTestManager *allTestSuite = nullptr;
-            return &allTestSuite;
-        }
-
-    public:
-        static void Add(BaseTestManager *ts)
-        {
-            BaseTestManager **allTestSuite = __getAllTest();
-            ts->next = *allTestSuite;
-            *allTestSuite = ts;
-        }
-
-        static BaseTestManager *getAllTest()
-        {
-            return *__getAllTest();
-        }
-
-        BaseTestManager *Next()
-        {
-            return this->next;
-        }
-
-        Test *GetTestSuite()
-        {
-            return this->list;
-        }
-    };
-
-    template <class T>
-    class TestSuiteManager : public BaseTestManager
-    {
-        TestSuiteManager()
+        UnitTest()
         {
             this->list = nullptr;
-            BaseTestManager::Add(this);
         }
 
     public:
-        static TestSuiteManager *getInst()
+        static UnitTest *GetInstance()
         {
-            static TestSuiteManager manager;
+            static UnitTest manager;
             return &manager;
         }
 
-        static void AddTest(Test *tc)
-        {
-            TestSuiteManager *manager = getInst();
+        int Run(const char *suite_name, const char *tc_name);
 
-            if (manager->list)
-            {
-                Test *it = manager->list;
-                while (it->next)
-                {
-                    it = it->next;
-                }
-                it->next = tc;
-            }
-            else
-            {
-                manager->list = tc;
-            }
-
-            tc->next = nullptr;
-        }
+        static void AddTest(Test *tc);
     };
 
     /**
@@ -189,7 +143,7 @@ extern "C"
      * @brief Entry function.
      *
      */
-    void utest_main(const char *suite_name, const char *tc_name);
+    int utest_main(const char *suite_name, const char *tc_name);
 
 #ifdef __cplusplus
 }
@@ -203,7 +157,7 @@ extern "C"
     class TEST_CASE_CLASS_NAME(ts_name, tc_name);                      \
     class TEST_CASE_CLASS_NAME(ts_name, tc_name) : public parent_class \
     {                                                                  \
-        void run(void);                                                \
+        void TestBody(void) override;                                  \
                                                                        \
     public:                                                            \
         TEST_CASE_CLASS_NAME(ts_name, tc_name)                         \
@@ -211,12 +165,12 @@ extern "C"
         {                                                              \
             this->name = name;                                         \
             this->__ts_name = #ts_name;                                \
-            testing::TestSuiteManager<parent_class>::AddTest(this);    \
+            testing::UnitTest::AddTest(this);                          \
         }                                                              \
     };                                                                 \
     static TEST_CASE_CLASS_NAME(ts_name, tc_name)                      \
         TEST_CASE_NAME(ts_name, tc_name)(#tc_name);                    \
-    void TEST_CASE_CLASS_NAME(ts_name, tc_name)::run(void)
+    void TEST_CASE_CLASS_NAME(ts_name, tc_name)::TestBody(void)
 
 // Defines a test.
 //

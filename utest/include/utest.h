@@ -36,53 +36,57 @@
 #include <test_deprecated.h>
 #include <tc_util.h>
 
+namespace unittest
+{
+    /**
+     * @brief Fail the currently running test.
+     *
+     * This is the function called from failed assertions and the like. You
+     * probably don't need to call it yourself.
+     */
+    void fail(void);
+
+    /**
+     * @brief Pass the currently running test.
+     *
+     * Normally a test passes just by returning without an assertion failure.
+     * However, if the success case for your test involves a fatal fault,
+     * you can call this function from k_sys_fatal_error_handler to indicate that
+     * the test passed before aborting the thread.
+     */
+    void pass(void);
+
+    /**
+     * @brief Skip the current test.
+     */
+    void skip(void);
+
+    /**
+     * @brief run all test function, must to implement this.
+     *
+     */
+    void RunAllTest(void);
+}
+
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/**
- * @brief Entry function.
- *
- */
-void utest_main(void);
+    /**
+     * @brief Entry function.
+     *
+     */
+    void utest_main(void);
 
-/**
- * @brief run all test function, must to implement this.
- *
- */
-void RunAllTest(void);
-
-/**
- * @brief Fail the currently running test.
- *
- * This is the function called from failed assertions and the like. You
- * probably don't need to call it yourself.
- */
-void utest_fail(void);
-
-/**
- * @brief Pass the currently running test.
- *
- * Normally a test passes just by returning without an assertion failure.
- * However, if the success case for your test involves a fatal fault,
- * you can call this function from k_sys_fatal_error_handler to indicate that
- * the test passed before aborting the thread.
- */
-void utest_pass(void);
-
-/**
- * @brief Skip the current test.
- */
-void utest_skip(void);
+#ifdef __cplusplus
+}
+#endif
 
 #define TEST(ts_name, tc_name) void TEST_CASE_NAME(ts_name, tc_name)(void)
 
 #define TEST_SETUP(ts_name) void TEST_SETUP_NAME(ts_name)(void)
 
 #define TEST_TEARDOWN(ts_name) void TEST_TEARDOWN_NAME(ts_name)(void)
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _TESTSUITE_INCLUDE_UTEST_H_ */

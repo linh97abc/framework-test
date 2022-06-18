@@ -24,7 +24,7 @@ static int cleanup_test(struct unit_test *test)
 	int ret = TC_PASS;
 	int mock_status;
 
-	mock_status = z_cleanup_mock();
+	mock_status = unittest::mock::__cleanup();
 
 	if (!ret && mock_status == 1)
 	{
@@ -74,19 +74,22 @@ static jmp_buf test_fail;
 static jmp_buf test_skip;
 static jmp_buf test_pass;
 
-void utest_fail(void)
+namespace unittest
 {
-	longjmp(test_fail, 1);
-}
+	void fail(void)
+	{
+		longjmp(test_fail, 1);
+	}
 
-void utest_skip(void)
-{
-	longjmp(test_skip, 1);
-}
+	void skip(void)
+	{
+		longjmp(test_skip, 1);
+	}
 
-void utest_pass(void)
-{
-	longjmp(test_pass, 1);
+	void pass(void)
+	{
+		longjmp(test_pass, 1);
+	}
 }
 
 static int run_test(struct unit_test *test)
@@ -140,7 +143,7 @@ out:
 
 /* End Porting */
 
-int z_utest_run_test_suite(const char *name, struct unit_test *suite)
+int unittest::run_test_suite(const char *name, struct unit_test *suite)
 {
 	int fail = 0;
 	unsigned int test_num = 0;
@@ -187,8 +190,11 @@ static void end_report(void)
 
 void utest_main(void)
 {
-	z_init_mock();
-	RunAllTest();
+	if (!unittest::mock::__init())
+	{
+		unittest::RunAllTest();
+	}
+
 	end_report();
 
 	DO_END_TEST();

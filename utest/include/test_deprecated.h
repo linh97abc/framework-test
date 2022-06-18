@@ -30,27 +30,19 @@ extern "C"
 		void (*teardown)(void);
 	};
 
-	/**
-	 * @brief Run a test suite.
-	 *
-	 * Internal implementation. Do not call directly. This will run the full test suite along with some
-	 * checks for fast failures and initialization.
-	 *
-	 * @param name The name of the suite to run.
-	 * @param suite Pointer to the first unit test.
-	 * @return Negative value if the test suite never ran; otherwise, return the number of failures.
-	 */
-	int z_utest_run_test_suite(const char *name, struct unit_test *suite);
+#ifdef __cplusplus
+}
+#endif
 
-	/**
-	 * @defgroup utest_test_deprecated utest testing macros
-	 * @ingroup utest
-	 *
-	 * This module eases the testing process by providing helpful macros and other
-	 * testing structures.
-	 *
-	 * @{
-	 */
+/**
+ * @defgroup utest_test_deprecated utest testing macros
+ * @ingroup utest
+ *
+ * This module eases the testing process by providing helpful macros and other
+ * testing structures.
+ *
+ * @{
+ */
 
 #define TEST_ID_INFO(ts_name, tc_name) "TEST(" #ts_name ", " #tc_name ")"
 #define TEST_SETUP_NAME(ts_name) _testsuite_##ts_name##_setup
@@ -93,21 +85,31 @@ extern "C"
 	void TEST_TEARDOWN_NAME(suite)(void); \
 	struct unit_test _test_suite_##suite[] = {__VA_ARGS__, {0}}
 
+/**
+ * @}
+ */
 
+namespace unittest
+{
+
+	/**
+	 * @brief Run a test suite.
+	 *
+	 * Internal implementation. Do not call directly. This will run the full test suite along with some
+	 * checks for fast failures and initialization.
+	 *
+	 * @param name The name of the suite to run.
+	 * @param suite Pointer to the first unit test.
+	 * @return Negative value if the test suite never ran; otherwise, return the number of failures.
+	 */
+	int run_test_suite(const char *name, struct unit_test *suite);
+}
 
 /**
  * @brief Run test suite
  *
  * @param suite Name of the testing suite
  */
-#define RUN_TEST_SUITE(suite) z_utest_run_test_suite(#suite, _test_suite_##suite)
-
-	/**
-	 * @}
-	 */
-
-#ifdef __cplusplus
-}
-#endif
+#define RUN_TEST_SUITE(suite) unittest::run_test_suite(#suite, _test_suite_##suite)
 
 #endif /* _TESTSUITE__TEST_TEST_H_ */

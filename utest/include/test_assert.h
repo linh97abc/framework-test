@@ -16,16 +16,13 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C"
-{
-	void utest_fail(void);
-}
 
 #include <iostream>
 #include <string.h>
 
 namespace unittest
 {
+	void fail(void);
 	class AssertionResult
 	{
 	public:
@@ -40,7 +37,7 @@ namespace unittest
 			if (!success_)
 			{
 				std::cout << std::endl;
-				utest_fail();
+				fail();
 			}
 		}
 

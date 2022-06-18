@@ -11,7 +11,7 @@
 
 TEST_SETUP(sample)
 {
-		// puts(__func__);
+	// puts(__func__);
 }
 
 TEST_TEARDOWN(sample)
@@ -38,7 +38,7 @@ TEST(sample, assert)
 	EXPECT_NOT_NULL("abc");
 	EXPECT_EQ(1, 2) << "test eq fail";
 	EXPECT_EQ_PTR(NULL, NULL);
-	utest_fail();
+	unittest::fail();
 }
 
 TEST(sample, mem_equal)
@@ -56,7 +56,7 @@ TEST(sample, mem_equal)
 
 TEST(sample, skip)
 {
-	utest_skip();
+	unittest::skip();
 }
 
 TEST_SETUP(suite2)
@@ -73,15 +73,15 @@ TEST(suite2, 001)
 }
 
 TEST_SUITE(sample,
-		      TEST_CASE(sample, skip),
-			  TEST_CASE(sample, eq_ptr),
-		      TEST_CASE(sample, empty),
-		      TEST_CASE(sample, assert),
+		   TEST_CASE(sample, skip),
+		   TEST_CASE(sample, eq_ptr),
+		   TEST_CASE(sample, empty),
+		   TEST_CASE(sample, assert),
 		   TEST_CASE(sample, mem_equal));
 
 TEST_SUITE(suite2, TEST_CASE(suite2, 001));
 
-void RunAllTest(void)
+void unittest::RunAllTest(void)
 {
 	RUN_TEST_SUITE(sample);
 	RUN_TEST_SUITE(suite2);

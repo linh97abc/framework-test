@@ -88,8 +88,12 @@ extern "C"
  *
  * @param suite Name of the testing suite
  */
-#define TEST_SUITE(suite, ...) \
+#define TEST_SUITE(suite, ...)            \
+	void TEST_SETUP_NAME(suite)(void);    \
+	void TEST_TEARDOWN_NAME(suite)(void); \
 	struct unit_test _test_suite_##suite[] = {__VA_ARGS__, {0}}
+
+
 
 /**
  * @brief Run test suite

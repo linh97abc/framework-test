@@ -73,7 +73,7 @@ static inline const char *TC_RESULT_TO_STR(int result)
 #ifndef TC_START
 #define TC_START(name)							\
 	do {								\
-		TEST_PRINT(".%s ", name);				\
+		TEST_PRINT(".%s\n", name);				\
 	} while (0)
 #endif
 
@@ -85,7 +85,7 @@ static inline const char *TC_RESULT_TO_STR(int result)
 /* prints result and the function name */
 #define Z_TC_END_RESULT(result)						\
 	do {									\
-		TC_END(result, " %s .", TC_RESULT_TO_STR(result));	\
+		TC_END(result, ".%s", TC_RESULT_TO_STR(result));	\
 		PRINT_LINE;							\
 	} while (0)
 #endif

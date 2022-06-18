@@ -25,12 +25,13 @@ extern "C"
 
 	void utest_fail(void);
 
-	static inline void __utest_assert_log(
-		const char *msg, ...)
+	static inline void __utest_assert_log(const char *default_msg, const char *file, int line,
+										  const char *msg, ...)
 	{
 
 		va_list vargs;
 		va_start(vargs, msg);
+		PRINT("\n    %s:%d: %s\n", file, line, default_msg);
 		vprintf(msg, vargs);
 		puts("");
 		va_end(vargs);
@@ -46,14 +47,13 @@ extern "C"
 	 * @{
 	 */
 
-#define __TEST_ASSERT(cond, default_msg, msg, ...)                  \
-	do                                                              \
-	{                                                               \
-		if (!(cond))                                                \
-		{                                                           \
-			PRINT("\n    %s:%d: " default_msg, __FILE__, __LINE__); \
-			__utest_assert_log(msg, ##__VA_ARGS__);                 \
-		}                                                           \
+#define __TEST_ASSERT(cond, default_msg, msg, ...)                                   \
+	do                                                                               \
+	{                                                                                \
+		if (!(cond))                                                                 \
+		{                                                                            \
+			__utest_assert_log(default_msg, __FILE__, __LINE__, msg, ##__VA_ARGS__); \
+		}                                                                            \
 	} while (0)
 
 /**
@@ -135,40 +135,6 @@ extern "C"
 	_TEST_ASSERT((a) != (b),   \
 				 #a " == " #b, \
 				 ##__VA_ARGS__)
-
-// /**
-//  * @brief Assert that number @a a equals @a b
-//  *
-//  * @a a and @a b won't be converted and will be compared directly.
-//  *
-//  * @param a Value to compare
-//  * @param b Value to compare
-//  * @param msg Optional message to print if the assertion fails
-//  */
-// #define EXPECT_EQ_INT(a, b, ...)                               \
-// 	_TEST_ASSERT((a) == (b),                                    \
-// 				__TEST_DEFAULT_MSG(                            \
-// 					#a " != " #b "\n" #a ": %ld\n" #b ": %ld", \
-// 					(a),                                       \
-// 					(b)),                                      \
-// 				##__VA_ARGS__)
-
-// /**
-//  * @brief Assert that number @a a not equals @a b
-//  *
-//  * @a a and @a b won't be converted and will be compared directly.
-//  *
-//  * @param a Value to compare
-//  * @param b Value to compare
-//  * @param msg Optional message to print if the assertion fails
-//  */
-// #define EXPECT_NE_INT(a, b, ...)                               \
-// 	_TEST_ASSERT((a) == (b),                                    \
-// 				__TEST_DEFAULT_MSG(                            \
-// 					#a " == " #b "\n" #a ": %ld\n" #b ": %ld", \
-// 					(a),                                       \
-// 					(b)),                                      \
-// 				##__VA_ARGS__)
 
 /**
  * @brief Tests that @a a < @a b

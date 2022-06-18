@@ -27,12 +27,12 @@ static int cleanup_test(testing::Test *test)
 
 	if (!ret && mock_status == 1)
 	{
-		testing::Message() << "Test " << TC_NAME(test->TS_Name(), test->Name()) << " failed: Unused mock parameter values\n";
+		testing::Message() << "Test " << TC_NAME(test->TS_Name(), test->Name()) << " failed: Unused mock parameter values";
 		ret = TC_FAIL;
 	}
 	else if (!ret && mock_status == 2)
 	{
-		testing::Message() << "Test" << TC_NAME(test->TS_Name(), test->Name()) << "failed: Unused mock return values\n";
+		testing::Message() << "Test" << TC_NAME(test->TS_Name(), test->Name()) << "failed: Unused mock return values";
 		ret = TC_FAIL;
 	}
 	else

@@ -20,7 +20,7 @@ struct parameter
 #include <stdlib.h>
 
 /* ------------- PORT -----------------*/
-#ifdef __ucos_ii__
+#ifdef __ucosii__
 #include <ucos_ii.h>
 
 #define MAX_NUM_OF_PARAM_ON_HEAP 1024
@@ -48,12 +48,12 @@ static struct parameter *alloc_parameter(void)
 int testing::mock::__init(void)
 {
 	INT8U err;
-	pmem = OSMemCreate((void *)__param_memarea, MAX_NUM_OF_PARAM_ON_HEAP, sizeof(struct parameter), &err);
+	p_param_mem = OSMemCreate((void *)__param_memarea, MAX_NUM_OF_PARAM_ON_HEAP, sizeof(struct parameter), &err);
 
 	if (err != OS_ERR_NONE)
 	{
 		testing::AssertionResult res = true;
-		testing::Message() << "Failed to init parameter memory region, error: " << err << std::endl;
+		testing::Message() << "Failed to init parameter memory region, error: " << err;
 
 		return -1;
 	}
@@ -232,12 +232,12 @@ int testing::mock::__cleanup(void)
 
 	if (parameter_list.next)
 	{
-		Message() << "Parameter not used by mock: " << parameter_list.next->fn << ":" << parameter_list.next->name << "\n";
+		Message() << "Parameter not used by mock: " << parameter_list.next->fn << ":" << parameter_list.next->name;
 		fail = 1;
 	}
 	if (return_value_list.next)
 	{
-		Message() << "Return value no used by mock: " << return_value_list.next->fn << "\n";
+		Message() << "Return value no used by mock: " << return_value_list.next->fn;
 		fail = 2;
 	}
 

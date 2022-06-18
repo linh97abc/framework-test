@@ -11,6 +11,10 @@ namespace testing
         /* data */
     public:
         Message(){};
+        ~Message()
+        {
+            std::cout << std::endl;
+        }
         // Streams a custom failure message into this object.
         template <typename T>
         Message &operator<<(const T &value)

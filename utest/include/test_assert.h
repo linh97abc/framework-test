@@ -14,8 +14,6 @@
 #define _TESTSUITE_ASSERT_H__
 
 #include <stdint.h>
-
-#include <iostream>
 #include <string.h>
 
 #include "port.h"
@@ -36,7 +34,6 @@ namespace testing
 		{
 			if (!success_)
 			{
-				std::cout << std::endl;
 				fail();
 			}
 		}

@@ -42,12 +42,11 @@ static inline const char *TC_RESULT_TO_STR(int result)
 	}
 }
 
-#define TC_LINE "\n"
+#define TC_LINE ""
 #define TC_NAME(ts_name, tc_name) (ts_name) << "_" << (tc_name)
-#define TC_START(ts_name, tc_name) "...\ntest_" << TC_NAME(ts_name, tc_name) << "... \n"
+#define TC_START(ts_name, tc_name) "...\ntest_" << TC_NAME(ts_name, tc_name) << "... "
 #define TC_END_RESULT(result) " " << TC_RESULT_TO_STR(result) << TC_LINE
-#define TC_END_REPORT(result)                                                            \
-	TC_LINE << "PROJECT EXECUTION " << (((result) == TC_PASS) ? "SUCCESSFUL" : "FAILED") \
-			<< "\n"
+#define TC_END_REPORT(result) \
+	TC_LINE "\nPROJECT EXECUTION " << (((result) == TC_PASS) ? "SUCCESSFUL" : "FAILED")
 
 #endif /* _TESTSUITE_INCLUDE_TC_UTIL_H_ */

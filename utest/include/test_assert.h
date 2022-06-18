@@ -13,6 +13,8 @@
 #ifndef _TESTSUITE_ASSERT_H__
 #define _TESTSUITE_ASSERT_H__
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -46,7 +48,7 @@ namespace unittest
 
 		std::ostream &Log()
 		{
-			return std::cout << "   ";
+			return std::cout << "[Assert Fail]  ";
 		}
 	};
 
@@ -84,31 +86,36 @@ namespace unittest
 /**
  * @brief Assert that this function call won't be reached
  */
-#define EXPECT_UNREACHABLE() EXPECT(0) << "Reached unreachable code" "\n"
+#define EXPECT_UNREACHABLE() EXPECT(0) << "Reached unreachable code" \
+										  "\n"
 
 /**
  * @brief Assert that @a cond is true
  * @param cond Condition to check
  */
-#define EXPECT_TRUE(cond) EXPECT(cond) << #cond " is false" "\n"
+#define EXPECT_TRUE(cond) EXPECT(cond) << #cond " is false" \
+												"\n"
 
 /**
  * @brief Assert that @a cond is false
  * @param cond Condition to check
  */
-#define EXPECT_FALSE(cond) EXPECT(!(cond)) << #cond " is true" "\n"
+#define EXPECT_FALSE(cond) EXPECT(!(cond)) << #cond " is true" \
+													"\n"
 
 /**
  * @brief Assert that @a ptr is NULL
  * @param ptr Pointer to compare
  */
-#define EXPECT_NULL(ptr) EXPECT((ptr) == NULL) << #ptr " is not NULL" "\n"
+#define EXPECT_NULL(ptr) EXPECT((ptr) == NULL) << #ptr " is not NULL" \
+													   "\n"
 
 /**
  * @brief Assert that @a ptr is not NULL
  * @param ptr Pointer to compare
  */
-#define EXPECT_NOT_NULL(ptr) EXPECT((ptr) != NULL) << #ptr " is NULL" "\n"
+#define EXPECT_NOT_NULL(ptr) EXPECT((ptr) != NULL) << #ptr " is NULL" \
+														   "\n"
 
 /**
  * @brief Assert that @a a equals @a b
@@ -118,7 +125,7 @@ namespace unittest
  * @param a Value to compare
  * @param b Value to compare
  */
-#define EXPECT_EQ(a, b) EXPECT((a) == (b)) << #a " != " #b "\n"
+#define EXPECT_EQ(a, b) EXPECT((a) == (b)) << #a " != " #b "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
  * @brief Assert that @a a does not equal @a b
@@ -128,7 +135,7 @@ namespace unittest
  * @param a Value to compare
  * @param b Value to compare
  */
-#define EXPECT_NE(a, b) EXPECT((a) != (b)) << #a " == " #b "\n"
+#define EXPECT_NE(a, b) EXPECT((a) != (b)) << #a " == " #b "\nvalue: " << (a) << "\n"
 
 /**
  * @brief Tests that @a a < @a b
@@ -138,7 +145,7 @@ namespace unittest
  * @param a Value to compare
  * @param b Value to compare
  */
-#define EXPECT_LT(a, b) EXPECT((a) < (b)) << #a " >= " #b "\n"
+#define EXPECT_LT(a, b) EXPECT((a) < (b)) << #a " >= " #b "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
  * @brief Tests that @a a <= @a b
@@ -148,7 +155,7 @@ namespace unittest
  * @param a Value to compare
  * @param b Value to compare
  */
-#define EXPECT_LE(a, b) EXPECT((a) <= (b)) << #a " > " #b "\n"
+#define EXPECT_LE(a, b) EXPECT((a) <= (b)) << #a " > " #b "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
  * @brief Tests that @a a > @a b
@@ -158,7 +165,7 @@ namespace unittest
  * @param a Value to compare
  * @param b Value to compare
  */
-#define EXPECT_GT(a, b) EXPECT((a) > (b)) << #a " <= " #b "\n"
+#define EXPECT_GT(a, b) EXPECT((a) > (b)) << #a " <= " #b "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
  * @brief Tests that @a a >= @a b
@@ -168,7 +175,7 @@ namespace unittest
  * @param a Value to compare
  * @param b Value to compare
  */
-#define EXPECT_GE(a, b) EXPECT((a) > (b)) << #a " < " #b "\n"
+#define EXPECT_GE(a, b) EXPECT((a) > (b)) << #a " < " #b "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
  * @brief Assert that @a a equals @a b
@@ -178,7 +185,11 @@ namespace unittest
  * @param a Value to compare
  * @param b Value to compare
  */
-#define EXPECT_EQ_PTR(a, b) EXPECT((void *)(a) == (void *)(b)) << #a " != " #b "\n"
+#define EXPECT_EQ_PTR(a, b) EXPECT((void *)(a) == (void *)(b)) \
+								<< #a " != " #b "\nv1: "       \
+								<< (uintptr_t)(a)              \
+								<< "\nv2: "                    \
+								<< (uintptr_t)(b) << "\n"
 
 /**
  * @brief Assert that @a a is within @a b with delta @a d
@@ -188,7 +199,7 @@ namespace unittest
  * @param delta Delta
  */
 #define EXPECT_ALMOST_EQ(a, b, delta) \
-	EXPECT(unittest::isAlmostEqual(a, b, delta)) << #a " not within " #b " +/- " #delta "\n"
+	EXPECT(unittest::isAlmostEqual(a, b, delta)) << #a " not within " #b " +/- " #delta "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
  * @brief Assert that @a a is relative equal @a b with delta @a d

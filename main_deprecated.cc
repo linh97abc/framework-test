@@ -24,6 +24,12 @@ TEST(sample, empty)
 	EXPECT_TRUE(0);
 }
 
+TEST(sample, eq_ptr)
+{
+	int x1, x2;
+	EXPECT_EQ_PTR(&x1, &x2) << "eq ptr";
+}
+
 TEST(sample, assert)
 {
 	EXPECT_TRUE(1);
@@ -68,6 +74,7 @@ TEST(suite2, 001)
 
 TEST_SUITE(sample,
 		      TEST_CASE(sample, skip),
+			  TEST_CASE(sample, eq_ptr),
 		      TEST_CASE(sample, empty),
 		      TEST_CASE(sample, assert),
 		   TEST_CASE(sample, mem_equal));

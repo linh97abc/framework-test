@@ -25,9 +25,6 @@
 #define PRINT_LINE TEST_PRINT("\n")
 #endif
 
-/* stack size and priority for test suite task */
-#define TASK_STACK_SIZE (1024 * 2)
-
 #define FMT_ERROR "%s - %s@%d. "
 
 #define TC_PASS 0
@@ -73,7 +70,7 @@ static inline const char *TC_RESULT_TO_STR(int result)
 #ifndef TC_START
 #define TC_START(name)							\
 	do {								\
-		TEST_PRINT(".%s\n", name);				\
+		TEST_PRINT("--\n.%s\n", name);				\
 	} while (0)
 #endif
 

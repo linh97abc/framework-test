@@ -5,7 +5,6 @@
  */
 
 #include "../include/unittest.h"
-#include <stdio.h>
 
 enum Test_phase
 {
@@ -28,14 +27,12 @@ static int cleanup_test(testing::Test *test)
 
 	if (!ret && mock_status == 1)
 	{
-		PRINT("Test %s failed: Unused mock parameter values\n",
-			  test->Name());
+		testing::Message() << "Test " << TC_NAME(test->TS_Name(), test->Name()) << " failed: Unused mock parameter values\n";
 		ret = TC_FAIL;
 	}
 	else if (!ret && mock_status == 2)
 	{
-		PRINT("Test %s failed: Unused mock return values\n",
-			  test->Name());
+		testing::Message() << "Test" << TC_NAME(test->TS_Name(), test->Name()) << "failed: Unused mock return values\n";
 		ret = TC_FAIL;
 	}
 	else
@@ -97,7 +94,7 @@ static int run_test(testing::Test *test)
 	int ret = TC_PASS;
 	int skip = 0;
 
-	TC_START(test->TS_Name(), test->Name());
+	testing::Message() << TC_START(test->TS_Name(), test->Name());
 
 	if (setjmp(test_fail))
 	{
@@ -131,11 +128,11 @@ out:
 
 	if (ret == TC_SKIP)
 	{
-		Z_TC_END_RESULT(TC_SKIP);
+		testing::Message() << TC_END_RESULT(TC_SKIP);
 	}
 	else
 	{
-		Z_TC_END_RESULT(ret);
+		testing::Message() << TC_END_RESULT(ret);
 	}
 
 	return ret;
@@ -168,8 +165,6 @@ static int RunTestSuite(testing::Test *ts, const char *suite_name, const char *t
 	{
 		return test_status;
 	}
-
-	// PRINT_LINE;
 
 	while (it)
 	{
@@ -213,11 +208,11 @@ static void end_report(void)
 {
 	if (test_status)
 	{
-		TC_END_REPORT(TC_FAIL);
+		testing::Message() << TC_END_REPORT(TC_FAIL);
 	}
 	else
 	{
-		TC_END_REPORT(TC_PASS);
+		testing::Message() << TC_END_REPORT(TC_PASS);
 	}
 }
 

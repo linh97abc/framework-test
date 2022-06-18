@@ -18,6 +18,8 @@
 #include <iostream>
 #include <string.h>
 
+#include "port.h"
+
 namespace testing
 {
 	void fail(void);
@@ -41,10 +43,6 @@ namespace testing
 
 		operator bool() const { return success_; } // NOLINT
 
-		std::ostream &Log()
-		{
-			return std::cout << "[Assert Fail]  ";
-		}
 	};
 
 	static inline bool isAlmostEqual(double a, double b, double delta)
@@ -77,14 +75,15 @@ namespace testing
 	default: // NOLINT
 #endif
 
-#define EXPECT(cond)                                       \
-	TEST_AMBIGUOUS_ELSE_BLOCKER_                           \
+#define EXPECT(cond)                                      \
+	TEST_AMBIGUOUS_ELSE_BLOCKER_                          \
 	if (testing::AssertionResult __utest_ar = bool(cond)) \
-	{                                                      \
-	}                                                      \
-	else                                                   \
-		__utest_ar.Log()                                   \
-			<< __FILE__ << ":" << __LINE__ << ": "
+	{                                                     \
+	}                                                     \
+	else                                                  \
+		testing::Message() << "[Assert Fail]  "           \
+						   << __FILE__ << ":"             \
+						   << __LINE__ << ": "
 
 /**
  * @brief Assert that this function call won't be reached
@@ -210,7 +209,7 @@ namespace testing
  * @param a Value to compare
  * @param b Value to compare
  * @param rel_error optional param
- * 
+ *
  * @example
  * EXPECT_FLOAT_EQ(1, 1.01);
  * EXPECT_FLOAT_EQ(1, 1.01, 1e-6) << "message";
@@ -225,12 +224,12 @@ namespace testing
  * @param a Value to compare
  * @param b Value to compare
  * @param rel_error optional param
- * 
- * @example 
+ *
+ * @example
  * EXPECT_DOUBLE_EQ(1, 1.01);
  * EXPECT_DOUBLE_EQ(1, 1.01) << "message";
  * EXPECT_DOUBLE_EQ(1, 1.01, 1e-6);
- * 
+ *
  */
 #define EXPECT_DOUBLE_EQ(a, b, ...) \
 	EXPECT(testing::isDoubleEqual(a, b, ##__VA_ARGS__)) << #a " != " #b "\nv1: " << (a) << "\nv2: " << (b) << "\n"

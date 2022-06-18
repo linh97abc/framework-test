@@ -26,12 +26,10 @@
 
 #define CONFIG_TEST_MOCKING
 
-#include <stdio.h>
-#define PRINT printf
-
 #include "test_assert.h"
 #include "test_mock.h"
 #include "tc_util.h"
+#include "port.h"
 
 namespace testing
 {

@@ -4,14 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 #include "../include/unittest.h"
 
 #ifdef CONFIG_TEST_MOCKING
 #include <string.h>
-#include <stdio.h>
-
 
 struct parameter
 {
@@ -22,7 +18,7 @@ struct parameter
 };
 
 #include <stdlib.h>
-#include <stdarg.h>
+#include "port.h"
 
 /* ------------- PORT -----------------*/
 #ifdef __ucos_ii__
@@ -55,9 +51,10 @@ int testing::mock::__init(void)
 	INT8U err;
 	pmem = OSMemCreate((void *)__param_memarea, MAX_NUM_OF_PARAM_ON_HEAP, sizeof(struct parameter), &err);
 
-	if (err != OS_ERR_NONE) {
+	if (err != OS_ERR_NONE)
+	{
 		testing::AssertionResult res = true;
-		res.Log() << "Failed to init parameter memory region, error: " << err << std::endl;
+		testing::Message() << "Failed to init parameter memory region, error: " << err << std::endl;
 
 		return -1;
 	}
@@ -142,7 +139,7 @@ void testing::mock::expect_value(const char *fn, const char *name, uintptr_t val
 }
 
 void testing::mock::check_expected_value(const char *fn, const char *name,
-								  uintptr_t val)
+										 uintptr_t val)
 {
 	struct parameter *param;
 	uintptr_t expected;
@@ -162,7 +159,7 @@ void testing::mock::expect_data(const char *fn, const char *name, void *val)
 }
 
 void testing::mock::check_expected_data(const char *fn, const char *name, void *data,
-								 uint32_t length)
+										uint32_t length)
 {
 	struct parameter *param;
 	void *expected;
@@ -184,7 +181,7 @@ void testing::mock::return_data(const char *fn, const char *name, void *val)
 }
 
 void testing::mock::copy_return_data(const char *fn, const char *name, void *data,
-							  uint32_t length)
+									 uint32_t length)
 {
 	struct parameter *param;
 	void *return_data;
@@ -236,15 +233,12 @@ int testing::mock::__cleanup(void)
 
 	if (parameter_list.next)
 	{
-		PRINT("Parameter not used by mock: %s:%s\n",
-			  parameter_list.next->fn,
-			  parameter_list.next->name);
+		Message() << "Parameter not used by mock: " << parameter_list.next->fn << ":" << parameter_list.next->name << "\n";
 		fail = 1;
 	}
 	if (return_value_list.next)
 	{
-		PRINT("Return value no used by mock: %s\n",
-			  return_value_list.next->fn);
+		Message() << "Return value no used by mock: " << return_value_list.next->fn << "\n";
 		fail = 2;
 	}
 

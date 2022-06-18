@@ -6,7 +6,7 @@
 
 
 
-#include <utest.h>
+#include <unittest.h>
 
 #ifdef CONFIG_TEST_MOCKING
 #include <string.h>
@@ -50,13 +50,13 @@ static struct parameter *alloc_parameter(void)
 	return param;
 }
 
-int unittest::mock::__init(void)
+int testing::mock::__init(void)
 {
 	INT8U err;
 	pmem = OSMemCreate((void *)__param_memarea, MAX_NUM_OF_PARAM_ON_HEAP, sizeof(struct parameter), &err);
 
 	if (err != OS_ERR_NONE) {
-		unittest::AssertionResult res = true;
+		testing::AssertionResult res = true;
 		res.Log() << "Failed to init parameter memory region, error: " << err << std::endl;
 
 		return -1;
@@ -81,7 +81,7 @@ static struct parameter *alloc_parameter(void)
 	return param;
 }
 
-int unittest::mock::__init(void)
+int testing::mock::__init(void)
 {
 	return 0;
 }
@@ -136,12 +136,12 @@ static void insert_value(struct parameter *param, const char *fn,
 static struct parameter parameter_list = {NULL, "", "", 0};
 static struct parameter return_value_list = {NULL, "", "", 0};
 
-void unittest::mock::expect_value(const char *fn, const char *name, uintptr_t val)
+void testing::mock::expect_value(const char *fn, const char *name, uintptr_t val)
 {
 	insert_value(&parameter_list, fn, name, val);
 }
 
-void unittest::mock::check_expected_value(const char *fn, const char *name,
+void testing::mock::check_expected_value(const char *fn, const char *name,
 								  uintptr_t val)
 {
 	struct parameter *param;
@@ -156,12 +156,12 @@ void unittest::mock::check_expected_value(const char *fn, const char *name,
 	EXPECT_EQ(expected, val) << fn << ":" << name << " received wrong value";
 }
 
-void unittest::mock::expect_data(const char *fn, const char *name, void *val)
+void testing::mock::expect_data(const char *fn, const char *name, void *val)
 {
 	insert_value(&parameter_list, fn, name, (uintptr_t)val);
 }
 
-void unittest::mock::check_expected_data(const char *fn, const char *name, void *data,
+void testing::mock::check_expected_data(const char *fn, const char *name, void *data,
 								 uint32_t length)
 {
 	struct parameter *param;
@@ -178,12 +178,12 @@ void unittest::mock::check_expected_data(const char *fn, const char *name, void 
 	EXPECT((data == NULL) || (memcmp(data, expected, length) == 0)) << fn << ":" << name << " data provided don't match";
 }
 
-void unittest::mock::return_data(const char *fn, const char *name, void *val)
+void testing::mock::return_data(const char *fn, const char *name, void *val)
 {
 	insert_value(&parameter_list, fn, name, (uintptr_t)val);
 }
 
-void unittest::mock::copy_return_data(const char *fn, const char *name, void *data,
+void testing::mock::copy_return_data(const char *fn, const char *name, void *data,
 							  uint32_t length)
 {
 	struct parameter *param;
@@ -199,12 +199,12 @@ void unittest::mock::copy_return_data(const char *fn, const char *name, void *da
 	memcpy(data, return_data, length);
 }
 
-void unittest::mock::returns_value(const char *fn, uintptr_t value)
+void testing::mock::returns_value(const char *fn, uintptr_t value)
 {
 	insert_value(&return_value_list, fn, "", value);
 }
 
-uintptr_t unittest::mock::get_return_value(const char *fn)
+uintptr_t testing::mock::get_return_value(const char *fn)
 {
 	uintptr_t value;
 	struct parameter *param =
@@ -230,7 +230,7 @@ static void free_param_list(struct parameter *param)
 	}
 }
 
-int unittest::mock::__cleanup(void)
+int testing::mock::__cleanup(void)
 {
 	int fail = 0;
 

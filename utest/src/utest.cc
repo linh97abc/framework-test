@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <utest.h>
+#include <unittest.h>
 #include <stdio.h>
 
 enum Test_phase
@@ -19,12 +19,12 @@ static enum Test_phase phase = TEST_PHASE_FRAMEWORK;
 
 static int test_status;
 
-static int cleanup_test(unittest::TestCase *test)
+static int cleanup_test(testing::Test *test)
 {
 	int ret = TC_PASS;
 	int mock_status;
 
-	mock_status = unittest::mock::__cleanup();
+	mock_status = testing::mock::__cleanup();
 
 	if (!ret && mock_status == 1)
 	{
@@ -46,7 +46,7 @@ static int cleanup_test(unittest::TestCase *test)
 	return ret;
 }
 
-static void run_test_functions(unittest::TestCase *test)
+static void run_test_functions(testing::Test *test)
 {
 	phase = TEST_PHASE_SETUP;
 	test->SetUp();
@@ -74,7 +74,7 @@ static jmp_buf test_fail;
 static jmp_buf test_skip;
 static jmp_buf test_pass;
 
-namespace unittest
+namespace testing
 {
 	void fail(void)
 	{
@@ -92,7 +92,7 @@ namespace unittest
 	}
 }
 
-static int run_test(unittest::TestCase *test)
+static int run_test(testing::Test *test)
 {
 	int ret = TC_PASS;
 	int skip = 0;
@@ -143,7 +143,7 @@ out:
 
 /* End Porting */
 
-int unittest::run_test_suite(const char *name, unittest::TestCase **suite)
+int testing::run_test_suite(const char *name, testing::Test **suite)
 {
 	int fail = 0;
 	unsigned int test_num = 0;
@@ -190,9 +190,9 @@ static void end_report(void)
 
 void utest_main(void)
 {
-	if (!unittest::mock::__init())
+	if (!testing::mock::__init())
 	{
-		unittest::RunAllTest();
+		testing::RunAllTest();
 	}
 
 	end_report();

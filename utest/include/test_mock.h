@@ -35,7 +35,7 @@
  * @param value Value for @a param
  */
 #define utest_expect_value(func, param, value)                      \
-	unittest::mock::expect_value(STRINGIFY(func), STRINGIFY(param), \
+	testing::mock::expect_value(STRINGIFY(func), STRINGIFY(param), \
 								 (uintptr_t)(value))
 
 /**
@@ -50,7 +50,7 @@
  * @param param Parameter to check
  */
 #define utest_check_expected_value(param)                      \
-	unittest::mock::expected_value(__func__, STRINGIFY(param), \
+	testing::mock::expected_value(__func__, STRINGIFY(param), \
 								   (uintptr_t)(param))
 
 /**
@@ -66,7 +66,7 @@
  * @param data pointer for the data for parameter @a param
  */
 #define utest_expect_data(func, param, data) \
-	unittest::mock::expect_data(STRINGIFY(func), STRINGIFY(param), (void *)(data))
+	testing::mock::expect_data(STRINGIFY(func), STRINGIFY(param), (void *)(data))
 
 /**
  * @brief If data pointed by @a param don't match the data set by
@@ -81,7 +81,7 @@
  * @param length Length of the data to compare
  */
 #define utest_check_expected_data(param, length)                    \
-	unittest::mock::check_expected_data(__func__, STRINGIFY(param), \
+	testing::mock::check_expected_data(__func__, STRINGIFY(param), \
 										(void *)(param), (length))
 
 /**
@@ -96,7 +96,7 @@
  * @param data pointer for the data for parameter @a param
  */
 #define utest_return_data(func, param, data) \
-	unittest::mock::return_data(STRINGIFY(func), STRINGIFY(param), (void *)(data))
+	testing::mock::return_data(STRINGIFY(func), STRINGIFY(param), (void *)(data))
 
 /**
  * @brief Copy the data set by utest_return_data to the memory pointed by
@@ -109,7 +109,7 @@
  * @param length Length of the data to return
  */
 #define utest_copy_return_data(param, length)                    \
-	unittest::mock::copy_return_data(__func__, STRINGIFY(param), \
+	testing::mock::copy_return_data(__func__, STRINGIFY(param), \
 									 (void *)(param), (length))
 /**
  * @brief Tell @a func that it should return @a value
@@ -118,7 +118,7 @@
  * @param value Value to return from @a func
  */
 #define utest_returns_value(func, value) \
-	unittest::mock::returns_value(STRINGIFY(func), (uintptr_t)(value))
+	testing::mock::returns_value(STRINGIFY(func), (uintptr_t)(value))
 
 /**
  * @brief Get the return value for current function
@@ -128,7 +128,7 @@
  *
  * @returns The value the current function should return
  */
-#define utest_get_return_value() unittest::mock::get_return_value(__func__)
+#define utest_get_return_value() testing::mock::get_return_value(__func__)
 
 /**
  * @brief Get the return value as a pointer for current function
@@ -139,7 +139,7 @@
  * @returns The value the current function should return as a `void *`
  */
 #define utest_get_return_value_ptr() \
-	((void *)unittest::mock::get_return_value(__func__))
+	((void *)testing::mock::get_return_value(__func__))
 
 /**
  * @}
@@ -147,7 +147,7 @@
 
 #ifdef CONFIG_TEST_MOCKING
 
-namespace unittest
+namespace testing
 {
 	namespace mock
 	{
@@ -173,7 +173,7 @@ namespace unittest
 }
 
 #else /* !CONFIG_TEST_MOCKING */
-namespace unittest
+namespace testing
 {
 	namespace mock
 	{

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <utest.h>
+#include <unittest.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <iostream>
@@ -28,7 +28,7 @@ TEST(sample, assert)
 	EXPECT_NOT_NULL("abc");
 	EXPECT_EQ(1, 2) << "test eq fail";
 	EXPECT_EQ_PTR(NULL, NULL);
-	unittest::fail();
+	testing::fail();
 }
 
 TEST(sample, mem_equal)
@@ -46,10 +46,10 @@ TEST(sample, mem_equal)
 
 TEST(sample, skip)
 {
-	unittest::skip();
+	testing::skip();
 }
 
-class suite2 : public unittest::TestCase
+class suite2 : public testing::Test
 {
 	void SetUp()
 	{
@@ -76,7 +76,7 @@ TEST_SUITE(sample,
 
 TEST_SUITE(suite2, TEST_CASE(suite2, 001));
 
-void unittest::RunAllTest(void)
+void testing::RunAllTest(void)
 {
 	RUN_TEST_SUITE(sample);
 	RUN_TEST_SUITE(suite2);

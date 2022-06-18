@@ -1,6 +1,6 @@
 #pragma once
 
-namespace unittest
+namespace testing
 {
     template <class T>
     class GenInst
@@ -15,15 +15,15 @@ namespace unittest
     template <class T>
     T GenInst<T>::inst; 
 
-    class TestCase;
+    class Test;
 
     class TestSuite
     {
-        friend class TestCase;
+        friend class Test;
 
     private:
-        TestCase *list;
-        void AddTestCase(TestCase *tc)
+        Test *list;
+        void AddTestCase(Test *tc)
         {
             tc->next = this->list;
             this->list = tc;
@@ -40,23 +40,23 @@ namespace unittest
         ~TestSuite() = default;
     };
 
-    class TestCase
+    class Test
     {
         friend class TestSuite;
 
     private:
-        TestCase *next;
+        Test *next;
         virtual void run(void) = 0;
 
     public:
-        TestCase(TestSuite &suite)
+        Test(TestSuite &suite)
         {
             suite.AddTestCase(this);
         }
     };
 
     template <class T>
-    class _TestCase : public TestCase
+    class _TestCase : public Test
     {
     private:
         virtual void run(void) = 0;
@@ -70,14 +70,14 @@ namespace unittest
 
 };
 
-#define TEST_SUITE(suite_name) class TestSuite_##suite_name : public unittest::TestSuite
+#define TEST_SUITE(suite_name) class TestSuite_##suite_name : public testing::TestSuite
 #define TEST_CASE(suite_name, tc_name)                                    \
     class TestCase_##suite_name##_##tc_name                               \
-        : public unittest::_TestCase<TestSuite_##suite_name>              \
+        : public testing::_TestCase<TestSuite_##suite_name>              \
     {                                                                     \
     public:                                                               \
         TestCase_##suite_name##_##tc_name(TestSuite &suite)               \
-            : unittest::_TestCase<TestSuite_##suite_name>(suite) {}       \
+            : testing::_TestCase<TestSuite_##suite_name>(suite) {}       \
                                                                           \
     private:                                                              \
         void run(void);                                                   \

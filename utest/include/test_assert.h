@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string.h>
 
-namespace unittest
+namespace testing
 {
 	void fail(void);
 	class AssertionResult
@@ -73,7 +73,7 @@ namespace unittest
 
 #define EXPECT(cond)                                       \
 	TEST_AMBIGUOUS_ELSE_BLOCKER_                           \
-	if (unittest::AssertionResult __utest_ar = bool(cond)) \
+	if (testing::AssertionResult __utest_ar = bool(cond)) \
 	{                                                      \
 	}                                                      \
 	else                                                   \
@@ -196,7 +196,7 @@ namespace unittest
  * @param delta Delta
  */
 #define EXPECT_ALMOST_EQ(a, b, delta) \
-	EXPECT(unittest::isAlmostEqual(a, b, delta)) << #a " not within " #b " +/- " #delta "\nv1: " << (a) << "\nv2: " << (b) << "\n"
+	EXPECT(testing::isAlmostEqual(a, b, delta)) << #a " not within " #b " +/- " #delta "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
  * @brief Assert that @a a is relative equal @a b with delta @a d

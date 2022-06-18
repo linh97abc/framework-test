@@ -14,7 +14,7 @@ OBJ := $(SRC:%=build/%.o)
 CC := gcc
 CPP := g++
 CPPFLAG :=
-APP_CFLAGS := -g -O4
+APP_CFLAGS := -g -O0
 # APP_CFLAGS += -ISource
 APP_CFLAGS += -Iutest/include
 LINK := g++

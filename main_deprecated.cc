@@ -78,7 +78,8 @@ TEST_F(suite2, 001)
 
 int main()
 {
-	utest_main();
+	utest_main("suit1", "001");
+	utest_main(NULL, NULL);
 
 	return 0;
 }

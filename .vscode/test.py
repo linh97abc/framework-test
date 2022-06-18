@@ -3,10 +3,8 @@ print("hello")
 import unittest
 
 class abc(unittest.TestCase):
-    unittest.TestCase().assertGreater()
-    unittest.TestCase().assertLess()
+    def test_1(self):
+        pass
 
-raise Exception()
-
-print("jakh")
+unittest.main(verbosity=2)
 

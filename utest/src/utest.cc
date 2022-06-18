@@ -97,7 +97,7 @@ static int run_test(testing::Test *test)
 	int ret = TC_PASS;
 	int skip = 0;
 
-	TC_START(test->Name());
+	TC_START(test->TS_Name(), test->Name());
 
 	if (setjmp(test_fail))
 	{
@@ -143,7 +143,21 @@ out:
 
 /* End Porting */
 
-static int RunTestSuite(testing::Test *ts)
+static inline bool isInRunLists(const testing::Test *tc, const char *suite_name, const char *tc_name)
+{
+	if ((suite_name != nullptr) && strcmp(tc->TS_Name(), suite_name))
+	{
+		return false;
+	}
+	if ((tc_name != nullptr) && strcmp(tc->Name(), tc_name))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+static int RunTestSuite(testing::Test *ts, const char *suite_name, const char *tc_name)
 {
 	testing::Test *it = ts;
 
@@ -155,21 +169,25 @@ static int RunTestSuite(testing::Test *ts)
 		return test_status;
 	}
 
-	PRINT_LINE;
+	// PRINT_LINE;
 
 	while (it)
 	{
-		if (run_test(it) == TC_FAIL)
+		if (isInRunLists(it, suite_name, tc_name))
 		{
-			fail++;
+			if (run_test(it) == TC_FAIL)
+			{
+				fail++;
+			}
+
+			test_num++;
+
+			if (fail && FAIL_FAST)
+			{
+				break;
+			}
 		}
 
-		test_num++;
-
-		if (fail && FAIL_FAST)
-		{
-			break;
-		}
 		it = it->Next();
 	}
 
@@ -178,14 +196,15 @@ static int RunTestSuite(testing::Test *ts)
 	return fail;
 }
 
-static void RunAllTest(void)
+static void RunAllTest(const char *suite_name, const char *tc_name)
 {
 	testing::BaseTestManager *allTest = testing::BaseTestManager::getAllTest();
 
 	while (allTest)
 	{
 		testing::Test *ts = allTest->GetTestSuite();
-		RunTestSuite(ts);
+
+		RunTestSuite(ts, suite_name, tc_name);
 		allTest = allTest->Next();
 	}
 }
@@ -202,11 +221,11 @@ static void end_report(void)
 	}
 }
 
-void utest_main(void)
+void utest_main(const char *suite_name, const char *tc_name)
 {
 	if (!testing::mock::__init())
 	{
-		RunAllTest();
+		RunAllTest(suite_name, tc_name);
 	}
 
 	end_report();

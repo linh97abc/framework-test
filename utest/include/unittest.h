@@ -74,8 +74,8 @@ namespace testing
         virtual void TearDown(void) {}
 
         virtual void run(void) = 0;
-        const char *Name() { return this->name; }
-        const char *TS_Name() { return this->__ts_name; }
+        const char *Name() const { return this->name; }
+        const char *TS_Name() const { return this->__ts_name; }
         Test *Next() { return this->next; }
 
         // We disallow copying Tests.
@@ -191,7 +191,7 @@ extern "C"
      * @brief Entry function.
      *
      */
-    void utest_main(void);
+    void utest_main(const char *suite_name, const char *tc_name);
 
 #ifdef __cplusplus
 }
@@ -218,7 +218,7 @@ extern "C"
     };                                                                 \
     TEST_CASE_CLASS_NAME(ts_name, tc_name)                             \
     TEST_CASE_NAME(ts_name, tc_name)                                   \
-    (TEST_ID_INFO(ts_name, tc_name));                                  \
+    (#tc_name);                                                        \
     void TEST_CASE_CLASS_NAME(ts_name, tc_name)::run(void)
 
 // Defines a test.

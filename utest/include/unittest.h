@@ -26,18 +26,137 @@
 
 #define CONFIG_TEST_MOCKING
 
-#define CONFIG_X86 1
-
 #include <stdio.h>
 #define PRINT printf
 
-#include <test_assert.h>
-#include <test_mock.h>
-#include <test_deprecated.h>
-#include <tc_util.h>
+#include "test_assert.h"
+#include "test_mock.h"
+#include "tc_util.h"
 
 namespace testing
 {
+    // The abstract class that all tests inherit from.
+    //
+    // In Google Test, a unit test program contains one or many TestSuites, and
+    // each TestSuite contains one or many Tests.
+    //
+    // When you define a test using the TEST macro, you don't need to
+    // explicitly derive from Test - the TEST macro automatically does
+    // this for you.
+    //
+    // The only time you derive from Test is when defining a test fixture
+    // to be used in a TEST_F.  For example:
+    //
+    //   class FooTest : public testing::Test {
+    //    protected:
+    //     void SetUp() override { ... }
+    //     void TearDown() override { ... }
+    //     ...
+    //   };
+    //
+    //   TEST_F(FooTest, Bar) { ... }
+    //   TEST_F(FooTest, Baz) { ... }
+    //
+    // Test is not copyable.
+    class Test
+    {
+        template <class T>
+        friend class TestSuiteManager;
+
+    protected:
+        Test() = default;
+        const char *name;
+        const char *__ts_name;
+        Test *next;
+
+    public:
+        virtual void SetUp(void) {}
+        virtual void TearDown(void) {}
+
+        virtual void run(void) = 0;
+        const char *Name() { return this->name; }
+        const char *TS_Name() { return this->__ts_name; }
+        Test *Next() { return this->next; }
+
+        // We disallow copying Tests.
+        Test(const Test &) = delete;
+        Test &operator=(const Test &) = delete;
+    };
+
+    class BaseTestManager
+    {
+    protected:
+        BaseTestManager *next;
+        Test *list;
+
+        static BaseTestManager **__getAllTest()
+        {
+            static BaseTestManager *allTestSuite = nullptr;
+            return &allTestSuite;
+        }
+
+    public:
+        static void Add(BaseTestManager *ts)
+        {
+            BaseTestManager **allTestSuite = __getAllTest();
+            ts->next = *allTestSuite;
+            *allTestSuite = ts;
+        }
+
+        static BaseTestManager *getAllTest()
+        {
+            return *__getAllTest();
+        }
+
+        BaseTestManager *Next()
+        {
+            return this->next;
+        }
+
+        Test *GetTestSuite()
+        {
+            return this->list;
+        }
+    };
+
+    template <class T>
+    class TestSuiteManager : public BaseTestManager
+    {
+        TestSuiteManager()
+        {
+            this->list = nullptr;
+            BaseTestManager::Add(this);
+        }
+
+    public:
+        static TestSuiteManager *getInst()
+        {
+            static TestSuiteManager manager;
+            return &manager;
+        }
+
+        static void AddTest(Test *tc)
+        {
+            TestSuiteManager *manager = getInst();
+
+            if (manager->list)
+            {
+                Test *it = manager->list;
+                while (it->next)
+                {
+                    it = it->next;
+                }
+                it->next = tc;
+            }
+            else
+            {
+                manager->list = tc;
+            }
+
+            tc->next = nullptr;
+        }
+    };
+
     /**
      * @brief Fail the currently running test.
      *
@@ -61,11 +180,6 @@ namespace testing
      */
     void skip(void);
 
-    /**
-     * @brief run all test function, must to implement this.
-     *
-     */
-    void RunAllTest(void);
 }
 
 #ifdef __cplusplus
@@ -83,14 +197,24 @@ extern "C"
 }
 #endif
 
+#define TEST_ID_INFO(ts_name, tc_name) "TEST(" #ts_name ", " #tc_name ")"
+#define TEST_CASE_NAME(ts_name, tc_name) _test_##ts_name##_##tc_name
+#define TEST_CASE_CLASS_NAME(ts_name, tc_name) _test_##ts_name##_##tc_name##_class
+
 #define __DEFINE_TEST(ts_name, tc_name, parent_class)                  \
+    class TEST_CASE_CLASS_NAME(ts_name, tc_name);                      \
     class TEST_CASE_CLASS_NAME(ts_name, tc_name) : public parent_class \
     {                                                                  \
         void run(void);                                                \
                                                                        \
     public:                                                            \
         TEST_CASE_CLASS_NAME(ts_name, tc_name)                         \
-        (const char *name) { this->name = name; }                      \
+        (const char *name)                                             \
+        {                                                              \
+            this->name = name;                                         \
+            this->__ts_name = #ts_name;                                \
+            testing::TestSuiteManager<parent_class>::AddTest(this);    \
+        }                                                              \
     };                                                                 \
     TEST_CASE_CLASS_NAME(ts_name, tc_name)                             \
     TEST_CASE_NAME(ts_name, tc_name)                                   \
@@ -150,39 +274,5 @@ extern "C"
 //     EXPECT_EQ(b_.size(), 1);
 //   }
 #define TEST_F(ts_name, tc_name) __DEFINE_TEST(ts_name, tc_name, ts_name)
-
-/**
- * @brief Define a test case
- *
- * This should be called as an argument to TEST_SUITE.
- *
- * @param ts_name Test suite name
- * @param tc_name Test case name
- */
-#define TEST_CASE(ts_name, tc_name) &TEST_CASE_NAME(ts_name, tc_name)
-
-/**
- * @brief Define a test suite
- *
- * This function should be called in the following fashion:
- * ```{.c}
- *      TEST_SUITE(test_suite_name,
- *              TEST_CASE(test_suite_name, test_case_name),
- *              TEST_CASE(test_suite_name, test_case_name)
- *      );
- *
- *      utest_run_test_suite(test_suite_name);
- * ```
- *
- * @param suite Name of the testing suite
- */
-#define TEST_SUITE(suite, ...) testing::Test *_test_suite_##suite[] = {__VA_ARGS__, {0}}
-
-/**
- * @brief Run test suite
- *
- * @param suite Name of the testing suite
- */
-#define RUN_TEST_SUITE(suite) testing::run_test_suite(#suite, _test_suite_##suite)
 
 #endif /* _TESTSUITE_INCLUDE_UTEST_H_ */

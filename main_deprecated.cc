@@ -76,22 +76,6 @@ TEST_F(suite2, 001)
 	EXPECT_EQ(1, 21) << "ancd";
 }
 
-TEST_SUITE(sample,
-		   TEST_CASE(sample, skip),
-		   TEST_CASE(sample, number),
-		   TEST_CASE(sample, eq_ptr),
-		   TEST_CASE(sample, empty),
-		   TEST_CASE(sample, assert),
-		   TEST_CASE(sample, mem_equal));
-
-TEST_SUITE(suite2, TEST_CASE(suite2, 001));
-
-void testing::RunAllTest(void)
-{
-	RUN_TEST_SUITE(sample);
-	RUN_TEST_SUITE(suite2);
-}
-
 int main()
 {
 	utest_main();

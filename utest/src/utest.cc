@@ -143,8 +143,10 @@ out:
 
 /* End Porting */
 
-int testing::run_test_suite(const char *name, testing::Test **suite)
+static int RunTestSuite(testing::Test *ts)
 {
+	testing::Test *it = ts;
+
 	int fail = 0;
 	unsigned int test_num = 0;
 
@@ -153,10 +155,11 @@ int testing::run_test_suite(const char *name, testing::Test **suite)
 		return test_status;
 	}
 
-	TC_SUITE_START(name);
-	while (suite[test_num])
+	PRINT_LINE;
+
+	while (it)
 	{
-		if (run_test(suite[test_num]) == TC_FAIL)
+		if (run_test(it) == TC_FAIL)
 		{
 			fail++;
 		}
@@ -167,13 +170,24 @@ int testing::run_test_suite(const char *name, testing::Test **suite)
 		{
 			break;
 		}
+		it = it->Next();
 	}
-
-	TC_SUITE_END(name, (fail > 0 ? TC_FAIL : TC_PASS));
 
 	test_status = (test_status || fail) ? 1 : 0;
 
 	return fail;
+}
+
+static void RunAllTest(void)
+{
+	testing::BaseTestManager *allTest = testing::BaseTestManager::getAllTest();
+
+	while (allTest)
+	{
+		testing::Test *ts = allTest->GetTestSuite();
+		RunTestSuite(ts);
+		allTest = allTest->Next();
+	}
 }
 
 static void end_report(void)
@@ -192,7 +206,7 @@ void utest_main(void)
 {
 	if (!testing::mock::__init())
 	{
-		testing::RunAllTest();
+		RunAllTest();
 	}
 
 	end_report();

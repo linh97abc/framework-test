@@ -7,7 +7,7 @@ SRC := utest/src/test_mock.cc utest/src/utest.cc
 # SRC += $(KERNEL_SRC:%.c=UCOSII/src/%.c)
 # SRC += $(KERNEL_SRC:%.c=Source/%.c)
 
-SRC += main_deprecated.cc
+SRC += main_deprecated.cc test2.cc
 
 OBJ := $(SRC:%=build/%.o)
 

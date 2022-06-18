@@ -12,7 +12,7 @@
 
 #ifndef _TESTSUITE__TEST_MOCK_H_
 #define _TESTSUITE__TEST_MOCK_H_
-#include <tc_util.h>
+#include "tc_util.h"
 #include <stdint.h>
 /**
  * @defgroup utest_mock utest mocking support

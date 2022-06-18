@@ -1,7 +1,0 @@
-#ifndef _TESTSUITE_TOOLCHAIN_H_
-#define _TESTSUITE_TOOLCHAIN_H_
-
-
-
-
-#endif /* _TESTSUITE_TOOLCHAIN_H_ */

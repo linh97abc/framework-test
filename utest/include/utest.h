@@ -83,10 +83,20 @@ extern "C"
 }
 #endif
 
-#define TEST(ts_name, tc_name) void TEST_CASE_NAME(ts_name, tc_name)(void)
+#define __DEFINE_TEST(ts_name, tc_name, parent_class)                  \
+    class TEST_CASE_CLASS_NAME(ts_name, tc_name) : public parent_class \
+    {                                                                  \
+        void run(void);                                                \
+    public:                                                            \
+        TEST_CASE_CLASS_NAME(ts_name, tc_name)                         \
+        (const char *name) { this->name = name; }                      \
+    };                                                                 \
+    TEST_CASE_CLASS_NAME(ts_name, tc_name)                             \
+    TEST_CASE_NAME(ts_name, tc_name)                                   \
+    (TEST_ID_INFO(ts_name, tc_name));                                  \
+    void TEST_CASE_CLASS_NAME(ts_name, tc_name)::run(void)
 
-#define TEST_SETUP(ts_name) void TEST_SETUP_NAME(ts_name)(void)
-
-#define TEST_TEARDOWN(ts_name) void TEST_TEARDOWN_NAME(ts_name)(void)
+#define TEST(ts_name, tc_name) __DEFINE_TEST(ts_name, tc_name, unittest::TestCase)
+#define TEST_F(ts_name, tc_name) __DEFINE_TEST(ts_name, tc_name, ts_name)
 
 #endif /* _TESTSUITE_INCLUDE_UTEST_H_ */

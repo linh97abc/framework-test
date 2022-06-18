@@ -9,16 +9,6 @@
 #include <stdio.h>
 #include <iostream>
 
-TEST_SETUP(sample)
-{
-	// puts(__func__);
-}
-
-TEST_TEARDOWN(sample)
-{
-	// puts(__func__);
-}
-
 TEST(sample, empty)
 {
 	EXPECT_TRUE(0);
@@ -59,15 +49,20 @@ TEST(sample, skip)
 	unittest::skip();
 }
 
-TEST_SETUP(suite2)
+class suite2 : public unittest::TestCase
 {
-}
+	void SetUp()
+	{
+		puts(__func__);
+	}
 
-TEST_TEARDOWN(suite2)
-{
-}
+	void TearDown()
+	{
+		puts(__func__);
+	}
+};
 
-TEST(suite2, 001)
+TEST_F(suite2, 001)
 {
 	EXPECT_EQ(1, 21) << "ancd";
 }

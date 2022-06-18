@@ -19,7 +19,7 @@ static enum Test_phase phase = TEST_PHASE_FRAMEWORK;
 
 static int test_status;
 
-static int cleanup_test(struct unit_test *test)
+static int cleanup_test(unittest::TestCase *test)
 {
 	int ret = TC_PASS;
 	int mock_status;
@@ -29,13 +29,13 @@ static int cleanup_test(struct unit_test *test)
 	if (!ret && mock_status == 1)
 	{
 		PRINT("Test %s failed: Unused mock parameter values\n",
-			  test->name);
+			  test->Name());
 		ret = TC_FAIL;
 	}
 	else if (!ret && mock_status == 2)
 	{
 		PRINT("Test %s failed: Unused mock return values\n",
-			  test->name);
+			  test->Name());
 		ret = TC_FAIL;
 	}
 	else
@@ -46,12 +46,12 @@ static int cleanup_test(struct unit_test *test)
 	return ret;
 }
 
-static void run_test_functions(struct unit_test *test)
+static void run_test_functions(unittest::TestCase *test)
 {
 	phase = TEST_PHASE_SETUP;
-	test->setup();
+	test->SetUp();
 	phase = TEST_PHASE_TEST;
-	test->test();
+	test->run();
 }
 
 /* Start Porting */
@@ -92,12 +92,12 @@ namespace unittest
 	}
 }
 
-static int run_test(struct unit_test *test)
+static int run_test(unittest::TestCase *test)
 {
 	int ret = TC_PASS;
 	int skip = 0;
 
-	TC_START(test->name);
+	TC_START(test->Name());
 
 	if (setjmp(test_fail))
 	{
@@ -121,7 +121,7 @@ static int run_test(struct unit_test *test)
 	run_test_functions(test);
 out:
 	phase = TEST_PHASE_TEARDOWN;
-	test->teardown();
+	test->TearDown();
 	phase = TEST_PHASE_FRAMEWORK;
 
 	if (cleanup_test(test) != TC_PASS)
@@ -143,7 +143,7 @@ out:
 
 /* End Porting */
 
-int unittest::run_test_suite(const char *name, struct unit_test *suite)
+int unittest::run_test_suite(const char *name, unittest::TestCase **suite)
 {
 	int fail = 0;
 	unsigned int test_num = 0;
@@ -154,9 +154,9 @@ int unittest::run_test_suite(const char *name, struct unit_test *suite)
 	}
 
 	TC_SUITE_START(name);
-	while (suite[test_num].test)
+	while (suite[test_num])
 	{
-		if (run_test(&suite[test_num]) == TC_FAIL)
+		if (run_test(suite[test_num]) == TC_FAIL)
 		{
 			fail++;
 		}

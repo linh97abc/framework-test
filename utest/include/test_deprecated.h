@@ -17,38 +17,35 @@
 #include <stdint.h>
 #include <tc_util.h>
 
-#ifdef __cplusplus
-extern "C"
+namespace unittest
 {
-#endif
-
-	struct unit_test
+	class TestCase
 	{
+	protected:
 		const char *name;
-		void (*test)(void);
-		void (*setup)(void);
-		void (*teardown)(void);
+
+	public:
+		virtual void SetUp(void) {}
+		virtual void TearDown(void) {}
+
+		virtual void run(void) = 0;
+		const char *Name() { return this->name; }
 	};
+};
 
-#ifdef __cplusplus
-}
-#endif
-
-/**
- * @defgroup utest_test_deprecated utest testing macros
- * @ingroup utest
- *
- * This module eases the testing process by providing helpful macros and other
- * testing structures.
- *
- * @{
- */
+	/**
+	 * @defgroup utest_test_deprecated utest testing macros
+	 * @ingroup utest
+	 *
+	 * This module eases the testing process by providing helpful macros and other
+	 * testing structures.
+	 *
+	 * @{
+	 */
 
 #define TEST_ID_INFO(ts_name, tc_name) "TEST(" #ts_name ", " #tc_name ")"
-#define TEST_SETUP_NAME(ts_name) _testsuite_##ts_name##_setup
-#define TEST_TEARDOWN_NAME(ts_name) _testsuite_##ts_name##_teardown
 #define TEST_CASE_NAME(ts_name, tc_name) _test_##ts_name##_##tc_name
-
+#define TEST_CASE_CLASS_NAME(ts_name, tc_name) _test_##ts_name##_##tc_name##_class
 /**
  * @brief Define a test case
  *
@@ -57,13 +54,7 @@ extern "C"
  * @param ts_name Test suite name
  * @param tc_name Test case name
  */
-#define TEST_CASE(ts_name, tc_name)           \
-	{                                         \
-		TEST_ID_INFO(ts_name, tc_name),       \
-			TEST_CASE_NAME(ts_name, tc_name), \
-			TEST_SETUP_NAME(ts_name),         \
-			TEST_TEARDOWN_NAME(ts_name)       \
-	}
+#define TEST_CASE(ts_name, tc_name) &TEST_CASE_NAME(ts_name, tc_name)
 
 /**
  * @brief Define a test suite
@@ -80,10 +71,7 @@ extern "C"
  *
  * @param suite Name of the testing suite
  */
-#define TEST_SUITE(suite, ...)            \
-	void TEST_SETUP_NAME(suite)(void);    \
-	void TEST_TEARDOWN_NAME(suite)(void); \
-	struct unit_test _test_suite_##suite[] = {__VA_ARGS__, {0}}
+#define TEST_SUITE(suite, ...) unittest::TestCase *_test_suite_##suite[] = {__VA_ARGS__, {0}}
 
 /**
  * @}
@@ -102,7 +90,7 @@ namespace unittest
 	 * @param suite Pointer to the first unit test.
 	 * @return Negative value if the test suite never ran; otherwise, return the number of failures.
 	 */
-	int run_test_suite(const char *name, struct unit_test *suite);
+	int run_test_suite(const char *name, unittest::TestCase **suite);
 }
 
 /**

@@ -20,13 +20,22 @@ TEST(sample, eq_ptr)
 	EXPECT_EQ_PTR(&x1, &x2) << "eq ptr";
 }
 
+TEST(sample, number)
+{
+	EXPECT_DOUBLE_EQ(1, 1);
+	EXPECT_DOUBLE_EQ(1, 1.05, 0.1);
+	EXPECT_DOUBLE_EQ(-1, -1.05, 0.1);
+	EXPECT_DOUBLE_EQ(-1, -1.2, 0.1);
+}
+
 TEST(sample, assert)
 {
+	int x = +0;
 	EXPECT_TRUE(1);
 	EXPECT_FALSE(0);
 	EXPECT_NULL(NULL);
 	EXPECT_NOT_NULL("abc");
-	EXPECT_EQ(1, 2) << "test eq fail";
+	EXPECT_EQ(1, x) << "test eq fail";
 	EXPECT_EQ_PTR(NULL, NULL);
 	testing::fail();
 }
@@ -69,6 +78,7 @@ TEST_F(suite2, 001)
 
 TEST_SUITE(sample,
 		   TEST_CASE(sample, skip),
+		   TEST_CASE(sample, number),
 		   TEST_CASE(sample, eq_ptr),
 		   TEST_CASE(sample, empty),
 		   TEST_CASE(sample, assert),

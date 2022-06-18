@@ -58,6 +58,16 @@ namespace testing
 
 		return (a >= (b - delta)) && (a <= (b + delta));
 	}
+
+	static inline bool isFloatEqual(double actual, double expected, double rel_error = 1e-6)
+	{
+		return isAlmostEqual(actual, expected, expected * rel_error);
+	}
+
+	static inline bool isDoubleEqual(double actual, double expected, double rel_error = 1e-12)
+	{
+		return isAlmostEqual(actual, expected, expected * rel_error);
+	}
 };
 
 #endif
@@ -195,7 +205,7 @@ namespace testing
  * @param b Value to compare
  * @param delta Delta
  */
-#define EXPECT_ALMOST_EQ(a, b, delta) \
+#define EXPECT_NEAR(a, b, delta) \
 	EXPECT(testing::isAlmostEqual(a, b, delta)) << #a " not within " #b " +/- " #delta "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
@@ -203,9 +213,31 @@ namespace testing
  *
  * @param a Value to compare
  * @param b Value to compare
- * @param delta Delta
+ * @param rel_error optional param
+ * 
+ * @example
+ * EXPECT_FLOAT_EQ(1, 1.01);
+ * EXPECT_FLOAT_EQ(1, 1.01, 1e-6) << "message";
+ * EXPECT_FLOAT_EQ(1, 1.01, 1e-6);
  */
-#define EXPECT_RELATIVE_EQ(a, b, delta) EXPECT_ALMOST_EQ(a, b, (b) * (delta))
+#define EXPECT_FLOAT_EQ(a, b, ...) \
+	EXPECT(testing::isFloatEqual(a, b, ##__VA_ARGS__)) << #a " != " #b "\nv1: " << (a) << "\nv2: " << (b) << "\n"
+
+/**
+ * @brief Assert that @a a is relative equal @a b with delta @a d
+ *
+ * @param a Value to compare
+ * @param b Value to compare
+ * @param rel_error optional param
+ * 
+ * @example 
+ * EXPECT_DOUBLE_EQ(1, 1.01);
+ * EXPECT_DOUBLE_EQ(1, 1.01) << "message";
+ * EXPECT_DOUBLE_EQ(1, 1.01, 1e-6);
+ * 
+ */
+#define EXPECT_DOUBLE_EQ(a, b, ...) \
+	EXPECT(testing::isDoubleEqual(a, b, ##__VA_ARGS__)) << #a " != " #b "\nv1: " << (a) << "\nv2: " << (b) << "\n"
 
 /**
  * @brief Assert that 2 memory buffers have the same contents

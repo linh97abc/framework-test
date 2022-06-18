@@ -24,8 +24,7 @@
  * @defgroup utest testing suite
  */
 
-#define CONFIG_uassert_VERBOSE 1
-#define CONFIG_utest_MOCKING
+#define CONFIG_TEST_MOCKING
 
 #define CONFIG_X86 1
 

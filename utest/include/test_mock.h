@@ -19,7 +19,7 @@
  * @ingroup utest
  *
  * This module provides simple mocking functions for unit testing. These
- * need CONFIG_utest_MOCKING=y.
+ * need CONFIG_TEST_MOCKING=y.
  *
  * @{
  */
@@ -145,7 +145,7 @@
  * @}
  */
 
-#ifdef CONFIG_utest_MOCKING
+#ifdef CONFIG_TEST_MOCKING
 
 #ifdef __cplusplus
 extern "C" {
@@ -173,11 +173,11 @@ uintptr_t z_utest_get_return_value(const char *fn);
 }
 #endif
 
-#else /* !CONFIG_utest_MOCKING */
+#else /* !CONFIG_TEST_MOCKING */
 
 #define z_init_mock()
 #define z_cleanup_mock() 0
 
-#endif /* CONFIG_utest_MOCKING */
+#endif /* CONFIG_TEST_MOCKING */
 
 #endif /* _TESTSUITE__TEST_MOCK_H_ */

@@ -7,10 +7,11 @@
 #include <utest.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <iostream>
 
 TEST_SETUP(sample)
 {
-	// puts(__func__);
+		// puts(__func__);
 }
 
 TEST_TEARDOWN(sample)
@@ -28,8 +29,8 @@ TEST(sample, assert)
 	EXPECT_TRUE(1);
 	EXPECT_FALSE(0);
 	EXPECT_NULL(NULL);
-	EXPECT_NOT_NULL("foo");
-	EXPECT_EQ(1, 1);
+	EXPECT_NOT_NULL("abc");
+	EXPECT_EQ(1, 2) << "test eq fail";
 	EXPECT_EQ_PTR(NULL, NULL);
 	utest_fail();
 }
@@ -62,13 +63,13 @@ TEST_TEARDOWN(suite2)
 
 TEST(suite2, 001)
 {
-	EXPECT_EQ(1, 21, "ancd");
+	EXPECT_EQ(1, 21) << "ancd";
 }
 
 TEST_SUITE(sample,
-		   TEST_CASE(sample, skip),
-		   TEST_CASE(sample, empty),
-		   TEST_CASE(sample, assert),
+		      TEST_CASE(sample, skip),
+		      TEST_CASE(sample, empty),
+		      TEST_CASE(sample, assert),
 		   TEST_CASE(sample, mem_equal));
 
 TEST_SUITE(suite2, TEST_CASE(suite2, 001));

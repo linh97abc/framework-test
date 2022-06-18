@@ -214,9 +214,8 @@ extern "C"
             testing::TestSuiteManager<parent_class>::AddTest(this);    \
         }                                                              \
     };                                                                 \
-    TEST_CASE_CLASS_NAME(ts_name, tc_name)                             \
-    TEST_CASE_NAME(ts_name, tc_name)                                   \
-    (#tc_name);                                                        \
+    static TEST_CASE_CLASS_NAME(ts_name, tc_name)                      \
+        TEST_CASE_NAME(ts_name, tc_name)(#tc_name);                    \
     void TEST_CASE_CLASS_NAME(ts_name, tc_name)::run(void)
 
 // Defines a test.

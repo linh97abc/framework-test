@@ -14,11 +14,14 @@ OBJ := $(SRC:%=build/%.o)
 CC := gcc
 CPP := g++
 CPPFLAG :=
-APP_CFLAGS := -g -O0
+DEBUG_FLAG :=
+DEBUG_FLAG := -g
+OPTIMIZE_FLAG := -O4
+APP_CFLAGS := $(DEBUG_FLAG) $(OPTIMIZE_FLAG)
 # APP_CFLAGS += -ISource
 APP_CFLAGS += -Iutest/include
 LINK := g++
-LINK_FLAG := -g
+LINK_FLAG := $(DEBUG_FLAG)
 ECHO := echo
 MKDIR := mkdir -p
 

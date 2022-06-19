@@ -27,6 +27,26 @@
 
 #include <stddef.h>
 
+#if (!defined (__STDC_VERSION__) || __STDC_VERSION__ < 201112L) \
+  && (!defined(__cplusplus) || __cplusplus < 201103L)
+
+/*
+ * A type with strong alignment requirements, similar to C11 max_align_t. It can
+ * be used to force alignment of data structures allocated on the stack or as
+ * return * type for heap allocators.
+ */
+typedef union {
+	long long       thelonglong;
+	long double     thelongdouble;
+	uintmax_t       theuintmax_t;
+	size_t          thesize_t;
+	uintptr_t       theuintptr_t;
+	void            *thepvoid;
+	void            (*thepfunc)(void);
+} max_align_t;
+
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,12 +65,8 @@ extern "C" {
 /** @brief Cast @p x, a signed integer, to a <tt>void*</tt>. */
 #define INT_TO_POINTER(x)  ((void *) (intptr_t) (x))
 
-#if !(defined(__CHAR_BIT__) && defined(__SIZEOF_LONG__))
-#	error Missing required predefined macros for BITS_PER_LONG calculation
-#endif
-
 /** Number of bits in a long int. */
-#define BITS_PER_LONG	(__CHAR_BIT__ * __SIZEOF_LONG__)
+#define BITS_PER_LONG	(8 * sizeof(long))
 
 /**
  * @brief Create a contiguous bitmask starting at bit position @p l
@@ -78,38 +94,17 @@ extern "C" {
 /** @brief 0 if @p cond is true-ish; causes a compile error otherwise. */
 #define ZERO_OR_COMPILE_ERROR(cond) ((int) sizeof(char[1 - 2 * !(cond)]) - 1)
 
-#if defined(__cplusplus)
-
-/* The built-in function used below for type checking in C is not
- * supported by GNU C++.
- */
-#define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
-
-#else /* __cplusplus */
-
-/**
- * @brief Zero if @p array has an array type, a compile error otherwise
- *
- * This macro is available only from C, not C++.
- */
-#define IS_ARRAY(array) \
-	ZERO_OR_COMPILE_ERROR( \
-		!__builtin_types_compatible_p(__typeof__(array), \
-					      __typeof__(&(array)[0])))
+#ifndef static_assert
+#define static_assert(cond) typedef char __util_static_assert_result_t[1 - 2 * !(cond)]
+#endif
 
 /**
  * @brief Number of elements in the given @p array
  *
- * In C++, due to language limitations, this will accept as @p array
- * any type that implements <tt>operator[]</tt>. The results may not be
- * particularly meaningful in this case.
- *
- * In C, passing a pointer as @p array causes a compile error.
+ * Warning: Do not passing a pointer as @p array.
  */
-#define ARRAY_SIZE(array) \
-	((size_t) (IS_ARRAY(array) + (sizeof(array) / sizeof((array)[0]))))
+#define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
 
-#endif /* __cplusplus */
 
 /**
  * @brief Check if a pointer @p ptr lies within @p array.
@@ -356,79 +351,6 @@ static inline int hex2char(uint8_t x, char *c)
 }
 
 /**
- * @brief      Convert a binary array into string representation.
- *
- * @param buf     The binary array to convert
- * @param buflen  The length of the binary array to convert
- * @param hex     Address of where to store the string representation.
- * @param hexlen  Size of the storage area for string representation.
- *
- * @return     The length of the converted string, or 0 if an error occurred.
- */
-static inline size_t bin2hex(const uint8_t *buf, size_t buflen, char *hex, size_t hexlen)
-{
-	if (hexlen < (buflen * 2 + 1)) {
-		return 0;
-	}
-
-	for (size_t i = 0; i < buflen; i++) {
-		if (hex2char(buf[i] >> 4, &hex[2 * i]) < 0) {
-			return 0;
-		}
-		if (hex2char(buf[i] & 0xf, &hex[2 * i + 1]) < 0) {
-			return 0;
-		}
-	}
-
-	hex[2 * buflen] = '\0';
-	return 2 * buflen;
-}
-
-/**
- * @brief      Convert a hexadecimal string into a binary array.
- *
- * @param hex     The hexadecimal string to convert
- * @param hexlen  The length of the hexadecimal string to convert.
- * @param buf     Address of where to store the binary data
- * @param buflen  Size of the storage area for binary data
- *
- * @return     The length of the binary array, or 0 if an error occurred.
- */
-static inline size_t hex2bin(const char *hex, size_t hexlen, uint8_t *buf, size_t buflen)
-{
-	uint8_t dec;
-
-	if (buflen < hexlen / 2 + hexlen % 2) {
-		return 0;
-	}
-
-	/* if hexlen is uneven, insert leading zero nibble */
-	if (hexlen % 2) {
-		if (char2hex(hex[0], &dec) < 0) {
-			return 0;
-		}
-		buf[0] = dec;
-		hex++;
-		buf++;
-	}
-
-	/* regular hex conversion */
-	for (size_t i = 0; i < hexlen / 2; i++) {
-		if (char2hex(hex[2 * i], &dec) < 0) {
-			return 0;
-		}
-		buf[i] = dec << 4;
-
-		if (char2hex(hex[2 * i + 1], &dec) < 0) {
-			return 0;
-		}
-		buf[i] += dec;
-	}
-
-	return hexlen / 2 + hexlen % 2;
-}
-
-/**
  * @brief Convert a binary coded decimal (BCD 8421) value to binary.
  *
  * @param bcd BCD 8421 value to convert.
@@ -451,61 +373,6 @@ static inline uint8_t bin2bcd(uint8_t bin)
 {
 	return (((bin / 10) << 4) | (bin % 10));
 }
-
-/**
- * @brief      Convert a uint8_t into a decimal string representation.
- *
- * Convert a uint8_t value into its ASCII decimal string representation.
- * The string is terminated if there is enough space in buf.
- *
- * @param buf     Address of where to store the string representation.
- * @param buflen  Size of the storage area for string representation.
- * @param value   The value to convert to decimal string
- *
- * @return     The length of the converted string (excluding terminator if
- *             any), or 0 if an error occurred.
- */
-uint8_t u8_to_dec(char *buf, uint8_t buflen, uint8_t value);
-
-/**
- * @brief Properly truncate a NULL-terminated UTF-8 string
- *
- * Take a NULL-terminated UTF-8 string and ensure that if the string has been
- * truncated (by setting the NULL terminator) earlier by other means, that
- * the string ends with a properly formatted UTF-8 character (1-4 bytes).
- *
- * @htmlonly
- * Example:
- *      char test_str[] = "€€€";
- *      char trunc_utf8[8];
- *
- *      printf("Original : %s\n", test_str); // €€€
- *      strncpy(trunc_utf8, test_str, sizeof(trunc_utf8));
- *      trunc_utf8[sizeof(trunc_utf8) - 1] = '\0';
- *      printf("Bad      : %s\n", trunc_utf8); // €€�
- *      utf8_trunc(trunc_utf8);
- *      printf("Truncated: %s\n", trunc_utf8); // €€
- * @endhtmlonly
- *
- * @param utf8_str NULL-terminated string
- *
- *  @return Pointer to the @p utf8_str
- */
-char *utf8_trunc(char *utf8_str);
-
-/**
- * @brief Copies a UTF-8 encoded string from @p src to @p dst
- *
- * The resulting @p dst will always be NULL terminated, and the @p dst string
- * will always be properly UTF-8 truncated.
- *
- * @param dst The destination of the UTF-8 string.
- * @param src The source string
- * @param n   The size of the @p dst buffer. Shall not be 0.
- *
- * return Pointer to the @p dst
- */
-char *utf8_lcpy(char *dst, const char *src, size_t n);
 
 #ifdef __cplusplus
 }

@@ -111,6 +111,16 @@ namespace testing
         static void AddTest(Test *tc);
     };
 
+    template <class T>
+    class ResgisterTest
+    {
+    public:
+        ResgisterTest(const char *tc_name)
+        {
+            static T inst(tc_name);
+        }
+    };
+
     /**
      * @brief Fail the currently running test.
      *
@@ -155,23 +165,22 @@ extern "C"
 #define TEST_CASE_NAME(ts_name, tc_name) _test_##ts_name##_##tc_name
 #define TEST_CASE_CLASS_NAME(ts_name, tc_name) _test_##ts_name##_##tc_name##_class
 
-#define __DEFINE_TEST(ts_name, tc_name, parent_class)                  \
-    class TEST_CASE_CLASS_NAME(ts_name, tc_name);                      \
-    class TEST_CASE_CLASS_NAME(ts_name, tc_name) : public parent_class \
-    {                                                                  \
-        void TestBody(void) override;                                  \
-                                                                       \
-    public:                                                            \
-        TEST_CASE_CLASS_NAME(ts_name, tc_name)                         \
-        (const char *name)                                             \
-        {                                                              \
-            this->name = name;                                         \
-            this->__ts_name = #ts_name;                                \
-            testing::UnitTest::AddTest(this);                          \
-        }                                                              \
-    };                                                                 \
-    static TEST_CASE_CLASS_NAME(ts_name, tc_name)                      \
-        TEST_CASE_NAME(ts_name, tc_name)(#tc_name);                    \
+#define __DEFINE_TEST(ts_name, tc_name, parent_class)                     \
+    class TEST_CASE_CLASS_NAME(ts_name, tc_name) : public parent_class    \
+    {                                                                     \
+        template <class T>                                                \
+        friend class testing::ResgisterTest;                              \
+        void TestBody(void) override;                                     \
+        TEST_CASE_CLASS_NAME(ts_name, tc_name)                            \
+        (const char *name)                                                \
+        {                                                                 \
+            this->name = name;                                            \
+            this->__ts_name = #ts_name;                                   \
+            testing::UnitTest::AddTest(this);                             \
+        }                                                                 \
+    };                                                                    \
+    static testing::ResgisterTest<TEST_CASE_CLASS_NAME(ts_name, tc_name)> \
+        TEST_CASE_NAME(ts_name, tc_name)(#tc_name);                       \
     void TEST_CASE_CLASS_NAME(ts_name, tc_name)::TestBody(void)
 
 // Defines a test.

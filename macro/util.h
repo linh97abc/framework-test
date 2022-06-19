@@ -380,23 +380,6 @@ static inline uint8_t bin2bcd(uint8_t bin)
 
 #endif /* !_ASMLANGUAGE */
 
-/** @brief Number of bytes in @p x kibibytes */
-#ifdef _LINKER
-/* This is used in linker scripts so need to avoid type casting there */
-#define KB(x) ((x) << 10)
-#else
-#define KB(x) (((size_t)x) << 10)
-#endif
-/** @brief Number of bytes in @p x mebibytes */
-#define MB(x) (KB(x) << 10)
-/** @brief Number of bytes in @p x gibibytes */
-#define GB(x) (MB(x) << 10)
-
-/** @brief Number of Hz in @p x kHz */
-#define KHZ(x) ((x) * 1000)
-/** @brief Number of Hz in @p x MHz */
-#define MHZ(x) (KHZ(x) * 1000)
-
 /**
  * @}
  */

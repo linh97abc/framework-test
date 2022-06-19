@@ -18,8 +18,14 @@
 #define _MACRO_INCLUDE_SYS_UTIL_MACROS_H_
 
 #ifdef __cplusplus
-extern "C" {
+#define START_OF_EXTERN_C_BLOCK extern "C" {
+#define END_OF_EXTERN_C_BLOCK }
+#else
+#define START_OF_EXTERN_C_BLOCK
+#define END_OF_EXTERN_C_BLOCK
 #endif
+
+START_OF_EXTERN_C_BLOCK
 
 /**
  * @addtogroup sys-util
@@ -624,8 +630,6 @@ extern "C" {
  * @}
  */
 
-#ifdef __cplusplus
-}
-#endif
+END_OF_EXTERN_C_BLOCK
 
 #endif /* _MACRO_INCLUDE_SYS_UTIL_MACROS_H_ */

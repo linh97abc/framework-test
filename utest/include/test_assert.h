@@ -17,9 +17,26 @@
 #include <string.h>
 
 #include "port.h"
+#include "tc_util.h"
 
 namespace testing
 {
+	enum shell_vt100_color
+	{
+		SHELL_VT100_COLOR_BLACK,
+		SHELL_VT100_COLOR_RED,
+		SHELL_VT100_COLOR_GREEN,
+		SHELL_VT100_COLOR_YELLOW,
+		SHELL_VT100_COLOR_BLUE,
+		SHELL_VT100_COLOR_MAGENTA,
+		SHELL_VT100_COLOR_CYAN,
+		SHELL_VT100_COLOR_WHITE,
+
+		SHELL_VT100_COLOR_DEFAULT,
+
+		VT100_COLOR_END
+	};
+
 	void fail(void);
 	class AssertionResult
 	{
@@ -39,7 +56,6 @@ namespace testing
 		}
 
 		operator bool() const { return success_; } // NOLINT
-
 	};
 
 	static inline bool isAlmostEqual(double a, double b, double delta)
@@ -72,15 +88,15 @@ namespace testing
 	default: // NOLINT
 #endif
 
-#define EXPECT(cond)                                      \
-	TEST_AMBIGUOUS_ELSE_BLOCKER_                          \
-	if (testing::AssertionResult __utest_ar = bool(cond)) \
-	{                                                     \
-	}                                                     \
-	else                                                  \
-		testing::Message() << "[Assert Fail]  "           \
-						   << __FILE__ << ":"             \
-						   << __LINE__ << ": "
+#define EXPECT(cond)                                         \
+	TEST_AMBIGUOUS_ELSE_BLOCKER_                             \
+	if (testing::AssertionResult __utest_ar = bool(cond))    \
+	{                                                        \
+	}                                                        \
+	else                                                     \
+		testing::Message() << TC_COLOR_RED "[Assert Fail]  " \
+						   << __FILE__ << ":"                \
+						   << __LINE__ << ": " TC_COLOR_END
 
 /**
  * @brief Assert that this function call won't be reached

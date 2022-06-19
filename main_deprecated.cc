@@ -81,5 +81,11 @@ int main()
 	utest_main("suit1", "001");
 	utest_main(NULL, NULL);
 
+	// std::cout << "\e[1;3" << 1 << "m";
+	// std::cout << "Heloo" << std::endl;
+
+	// std::cout << "\e[1;3" << 9 << "m";
+	// std::cout << "Heloo" << std::endl;
+
 	return 0;
 }

@@ -94,8 +94,16 @@ extern "C" {
 /** @brief 0 if @p cond is true-ish; causes a compile error otherwise. */
 #define ZERO_OR_COMPILE_ERROR(cond) ((int) sizeof(char[1 - 2 * !(cond)]) - 1)
 
-#ifndef static_assert
-#define static_assert(cond) typedef char __util_static_assert_result_t[1 - 2 * !(cond)]
+#if (!defined(__cplusplus) || (__cplusplus <= 201103L)) && !defined(static_assert)
+
+#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)) || \
+	(__STDC_VERSION__) >= 201100
+#define static_assert(EXPR, MSG...) _Static_assert(EXPR, "" MSG)
+
+#else
+
+#define static_assert(EXPR, MSG...) typedef char __util_static_assert_result_t[1 - 2 * !(cond)]
+#endif
 #endif
 
 /**

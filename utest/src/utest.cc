@@ -18,7 +18,7 @@ static enum Test_phase phase = TEST_PHASE_FRAMEWORK;
 
 static int test_status;
 
-static int cleanup_test(testing::Test *test)
+static int cleanup_test(const testing::Test *test)
 {
 	int ret = TC_PASS;
 	int mock_status;
@@ -179,7 +179,7 @@ static void end_report(void)
 	}
 }
 
-bool testing::Test::isSameName(const char *suite_name, const char *tc_name)
+bool testing::Test::isSameName(const char *suite_name, const char *tc_name) const
 {
 	if ((suite_name != nullptr) && strcmp(this->__ts_name, suite_name))
 	{

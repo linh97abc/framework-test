@@ -84,9 +84,9 @@ namespace testing
         //---------------
         const char *Name() const { return this->name; }
         const char *TS_Name() const { return this->__ts_name; }
-        Test *Next() { return this->next; }
-        int GetResult() { return this->tc_res; }
-        bool isSameName(const char *suite_name, const char *tc_name);
+        Test *Next() const { return this->next; }
+        int GetResult() const { return this->tc_res; }
+        bool isSameName(const char *suite_name, const char *tc_name) const;
     };
 
     class UnitTest
@@ -105,6 +105,8 @@ namespace testing
         }
 
         int Run(const char *suite_name, const char *tc_name);
+
+        int Run() { return this->Run(NULL, NULL); }
 
         static void AddTest(Test *tc);
     };

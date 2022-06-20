@@ -25,6 +25,11 @@ LINK_FLAG := $(DEBUG_FLAG)
 ECHO := echo
 MKDIR := mkdir -p
 
+EXE := main.exe
+
+# Create list of dependancy files for each object file.
+APP_DEPS := $(OBJ:.o=.d)
+
 # MINGW_LIB:=/mingw64/x86_64-w64-mingw32/lib
 # LIB:=$(MINGW_LIB)/libwinmm.a 
 
@@ -51,7 +56,24 @@ build/%.cc.o: %.cc
 build/%.cpp.o: %.cpp
 	$(compile_cpp)
 
-all: ${OBJ}
+.PHONY : all
+
+all:
+	@$(ECHO) $(EXE) Build complete
+
+all: $(EXE)
+
+
+# Include the dependency files unless the make goal is performing a clean
+# of the application.
+ifneq ($(firstword $(MAKECMDGOALS)),clean)
+ifneq ($(firstword $(MAKECMDGOALS)),clean_all)
+-include $(APP_DEPS)
+endif
+endif
+
+$(EXE): ${OBJ}
+	@$(ECHO) Info: Linking $@
 	$(LINK) $(LINK_FLAG) -o main.exe ${OBJ}
 
 clean:
